@@ -1,7 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { isValidSession, SESSION_COOKIE } from "@/lib/auth/session";
 
-export function middleware(req: NextRequest) {
+// Next.js 16: "middleware" wurde in "proxy" umbenannt; läuft standardmäßig
+// im Node.js-Runtime (nicht Edge) — daher ist node:crypto hier nutzbar.
+export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   if (pathname.startsWith("/login") || pathname.startsWith("/_next") || pathname === "/favicon.ico") {
     return NextResponse.next();

@@ -12,9 +12,12 @@ Eigenständiges Projekt, unabhängig von anderen Projekten in diesem Verzeichnis
 
 - Next.js (App Router, `src/`), TypeScript, Tailwind v4
 - Postgres (Supabase, Frankfurt) über **Drizzle** (`src/lib/db`)
-- Auth: **ein gemeinsames Portal-Passwort** (kein Nutzer-Login) — Middleware prüft ein
+- Auth: **ein gemeinsames Portal-Passwort** (kein Nutzer-Login) — `src/proxy.ts` (Next 16:
+  "Middleware" heißt jetzt "Proxy", läuft standardmäßig im Node.js-Runtime) prüft ein
   signiertes Session-Cookie (`src/lib/auth`), Passwort-Hash in `PORTAL_PASSWORD_HASH`.
 - Deploy: Vercel
+- **Preview:** Dev-Server läuft über die Parent-`.claude/launch.json` als `gebaeude-zugang-dev`
+  auf **Port 3002** (`npm run dev --prefix … -- -p 3002`), damit 3000/3001 (Nachbarprojekte) frei bleiben.
 
 ## Struktur
 
@@ -51,3 +54,13 @@ Eigenständiges Projekt, unabhängig von anderen Projekten in diesem Verzeichnis
 
 > Auf diesem Windows-Rechner in Terminalbefehlen `npm.cmd` / `npx.cmd` verwenden
 > (PowerShell blockiert die `.ps1`-Shims per Gruppenrichtlinie).
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
