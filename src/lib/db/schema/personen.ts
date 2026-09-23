@@ -10,7 +10,8 @@ import { gruppen } from "./gruppen";
  */
 export const personen = pgTable("personen", {
   id: serial("id").primaryKey(),
-  name: text("name").notNull(),
+  vorname: text("vorname").notNull(),
+  nachname: text("nachname").notNull(),
   gruppeId: integer("gruppe_id")
     .notNull()
     .references(() => gruppen.id, { onDelete: "restrict" }),

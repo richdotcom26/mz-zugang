@@ -5,7 +5,8 @@ import { db, schema } from "@/lib/db";
 import { DomainError } from "./errors";
 
 export const personSchema = z.object({
-  name: z.string().trim().min(1, "Pflichtfeld"),
+  vorname: z.string().trim().min(1, "Pflichtfeld"),
+  nachname: z.string().trim().min(1, "Pflichtfeld"),
   gruppeId: z.coerce.number().int().positive("Bitte eine Gruppe wählen"),
   transponderNr: z
     .string()
@@ -30,7 +31,8 @@ export async function listPersonenMitGruppe() {
   return db
     .select({
       id: schema.personen.id,
-      name: schema.personen.name,
+      vorname: schema.personen.vorname,
+      nachname: schema.personen.nachname,
       transponderNr: schema.personen.transponderNr,
       bemerkung: schema.personen.bemerkung,
       eingetragenVon: schema.personen.eingetragenVon,
@@ -44,7 +46,7 @@ export async function listPersonenMitGruppe() {
     })
     .from(schema.personen)
     .innerJoin(schema.gruppen, eq(schema.personen.gruppeId, schema.gruppen.id))
-    .orderBy(asc(schema.gruppen.name), asc(schema.personen.name));
+    .orderBy(asc(schema.gruppen.name), asc(schema.personen.nachname), asc(schema.personen.vorname));
 }
 
 export type PersonMitGruppe = Awaited<ReturnType<typeof listPersonenMitGruppe>>[number];

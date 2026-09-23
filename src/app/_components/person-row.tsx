@@ -51,7 +51,9 @@ function ViewRow({ person, onEdit }: { person: PersonMitGruppe; onEdit: () => vo
 
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-baseline gap-x-2">
-          <span className="font-medium text-ink">{person.name}</span>
+          <span className="font-medium text-ink">
+            {person.vorname} {person.nachname}
+          </span>
           {person.transponderNr ? (
             <span className="text-xs text-muted">Transponder {person.transponderNr}</span>
           ) : null}
@@ -78,7 +80,7 @@ function ViewRow({ person, onEdit }: { person: PersonMitGruppe; onEdit: () => vo
         <form
           action={deleteAction}
           onSubmit={(e) => {
-            if (!window.confirm(`"${person.name}" wirklich löschen?`)) e.preventDefault();
+            if (!window.confirm(`"${person.vorname} ${person.nachname}" wirklich löschen?`)) e.preventDefault();
           }}
         >
           <input type="hidden" name="id" value={person.id} />
@@ -107,8 +109,11 @@ function EditRow({
   return (
     <form action={formAction} className="grid gap-3 border-b border-line bg-brand-soft/30 px-3 py-3 sm:grid-cols-2">
       <input type="hidden" name="id" value={person.id} />
-      <Field label="Name" htmlFor={`name-${person.id}`} errors={errors?.name}>
-        <Input id={`name-${person.id}`} name="name" defaultValue={person.name} required />
+      <Field label="Vorname" htmlFor={`vorname-${person.id}`} errors={errors?.vorname}>
+        <Input id={`vorname-${person.id}`} name="vorname" defaultValue={person.vorname} required />
+      </Field>
+      <Field label="Nachname" htmlFor={`nachname-${person.id}`} errors={errors?.nachname}>
+        <Input id={`nachname-${person.id}`} name="nachname" defaultValue={person.nachname} required />
       </Field>
       <Field label="Gruppe" htmlFor={`gruppeId-${person.id}`} errors={errors?.gruppeId}>
         <Select id={`gruppeId-${person.id}`} name="gruppeId" defaultValue={person.gruppeId} required>

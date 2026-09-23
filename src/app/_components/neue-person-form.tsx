@@ -28,8 +28,11 @@ export function NeuePersonForm({ gruppen }: { gruppen: Gruppe[] }) {
       </CardHeader>
       <CardContent>
         <form ref={formRef} action={formAction} className="grid gap-3 sm:grid-cols-2">
-          <Field label="Name" htmlFor="name" errors={errors?.name}>
-            <Input id="name" name="name" required autoComplete="off" />
+          <Field label="Vorname" htmlFor="vorname" errors={errors?.vorname}>
+            <Input id="vorname" name="vorname" required autoComplete="off" />
+          </Field>
+          <Field label="Nachname" htmlFor="nachname" errors={errors?.nachname}>
+            <Input id="nachname" name="nachname" required autoComplete="off" />
           </Field>
           <Field label="Gruppe" htmlFor="gruppeId" errors={errors?.gruppeId}>
             <Select id="gruppeId" name="gruppeId" required defaultValue="">
