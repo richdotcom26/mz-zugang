@@ -23,7 +23,7 @@ export function RaeumeVerwaltung({ raeume }: { raeume: Raum[] }) {
       ) : (
         <ul className="flex flex-col gap-1">
           {raeume.map((raum) => (
-            <RaumZeile key={raum.id} raum={raum} />
+            <RaumZeile key={`${raum.id}-${raum.name}`} raum={raum} />
           ))}
         </ul>
       )}

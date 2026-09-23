@@ -23,7 +23,7 @@ export function AdminVerwaltung({ admins }: { admins: Admin[] }) {
       ) : (
         <ul className="flex flex-col gap-1">
           {admins.map((admin) => (
-            <AdminZeile key={admin.id} admin={admin} />
+            <AdminZeile key={`${admin.id}-${admin.name}`} admin={admin} />
           ))}
         </ul>
       )}
