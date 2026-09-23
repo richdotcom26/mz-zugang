@@ -10,7 +10,7 @@ import {
   setUebergabeSignatur,
   personSchema,
 } from "@/lib/domain/personen";
-import { createGruppe } from "@/lib/domain/gruppen";
+import { createGruppe, updateGruppe, moveGruppe } from "@/lib/domain/gruppen";
 import { createRaum, updateRaum } from "@/lib/domain/raeume";
 import { createAdmin, updateAdmin } from "@/lib/domain/admins";
 import { runAction, ok, parseForm, type ActionState } from "@/lib/domain/action-state";
@@ -91,6 +91,30 @@ export async function addGruppeAction(_prev: ActionState, formData: FormData): P
     revalidatePath("/");
     revalidatePath("/einstellungen");
     return ok("Gruppe angelegt.");
+  });
+}
+
+export async function editGruppeAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  return runAction(async () => {
+    const id = Number(formData.get("id"));
+    if (!id) throw new DomainError("VALIDATION", "Ungültige ID.");
+    const { name } = parseForm(gruppeSchema, formData);
+    await updateGruppe(id, name);
+    revalidatePath("/");
+    revalidatePath("/einstellungen");
+    return ok("Gruppe gespeichert.");
+  });
+}
+
+export async function moveGruppeAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  return runAction(async () => {
+    const id = Number(formData.get("id"));
+    if (!id) throw new DomainError("VALIDATION", "Ungültige ID.");
+    const richtung = formData.get("richtung") === "up" ? "up" : "down";
+    await moveGruppe(id, richtung);
+    revalidatePath("/");
+    revalidatePath("/einstellungen");
+    return ok();
   });
 }
 
