@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { GruppenVerwaltung } from "../_components/gruppen-verwaltung";
 import { RaeumeVerwaltung } from "../_components/raeume-verwaltung";
 import { AdminVerwaltung } from "../_components/admin-verwaltung";
+import { Datensicherung } from "../_components/datensicherung";
 
 export default async function EinstellungenPage() {
   const [gruppen, raeume, admins] = await Promise.all([listGruppen(), listRaeume(), listAdmins()]);
@@ -44,6 +45,15 @@ export default async function EinstellungenPage() {
         </CardHeader>
         <CardContent>
           <AdminVerwaltung admins={admins} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Datensicherung</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Datensicherung />
         </CardContent>
       </Card>
     </main>

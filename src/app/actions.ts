@@ -13,6 +13,7 @@ import {
 import { createGruppe, updateGruppe, moveGruppe } from "@/lib/domain/gruppen";
 import { createRaum, updateRaum } from "@/lib/domain/raeume";
 import { createAdmin, updateAdmin } from "@/lib/domain/admins";
+import { importDaten } from "@/lib/domain/backup";
 import { runAction, ok, parseForm, type ActionState } from "@/lib/domain/action-state";
 import { DomainError } from "@/lib/domain/errors";
 
@@ -163,5 +164,29 @@ export async function editAdminAction(_prev: ActionState, formData: FormData): P
     revalidatePath("/");
     revalidatePath("/einstellungen");
     return ok("Gespeichert.");
+  });
+}
+
+export async function importDatenAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  return runAction(async () => {
+    const datei = formData.get("datei");
+    if (!(datei instanceof File) || datei.size === 0) {
+      throw new DomainError("VALIDATION", "Bitte eine Sicherungsdatei auswählen.");
+    }
+
+    let dump: unknown;
+    try {
+      dump = JSON.parse(await datei.text());
+    } catch {
+      throw new DomainError("VALIDATION", "Datei ist kein gültiges JSON.");
+    }
+
+    const ergebnis = await importDaten(dump);
+    revalidatePath("/");
+    revalidatePath("/einstellungen");
+    return ok(
+      `Import abgeschlossen: ${ergebnis.personen} Personen, ${ergebnis.gruppen} Gruppen, ` +
+        `${ergebnis.raeume} Räume, ${ergebnis.admins} Verantwortliche.`,
+    );
   });
 }
