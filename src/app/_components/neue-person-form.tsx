@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Field } from "@/components/ui/field";
 import { Input, Select, Textarea } from "@/components/ui/input";
 import { SubmitButton, FormMessage } from "@/components/ui/form";
-import { useMeinName } from "@/lib/use-mein-name";
+import { useMeinName, useErfordertName } from "@/lib/use-mein-name";
 import { RaumAuswahl } from "./raum-auswahl";
 import type { Gruppe, Raum } from "@/lib/db/schema";
 
@@ -16,6 +16,7 @@ export function NeuePersonForm({ gruppen, raeume }: { gruppen: Gruppe[]; raeume:
   const [offen, setOffen] = useState(false);
   const [state, formAction] = useActionState(addPersonAction, IDLE);
   const [meinName] = useMeinName();
+  const { spread: sperre } = useErfordertName();
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
@@ -26,7 +27,7 @@ export function NeuePersonForm({ gruppen, raeume }: { gruppen: Gruppe[]; raeume:
 
   if (!offen) {
     return (
-      <Button onClick={() => setOffen(true)} className="self-start">
+      <Button onClick={() => setOffen(true)} className="self-start" {...sperre}>
         + Person hinzufügen
       </Button>
     );
@@ -98,7 +99,9 @@ export function NeuePersonForm({ gruppen, raeume }: { gruppen: Gruppe[]; raeume:
             <Textarea id="bemerkung" name="bemerkung" rows={2} />
           </Field>
           <div className="flex items-center gap-3 sm:col-span-2">
-            <SubmitButton pendingText="Speichere …">Hinzufügen</SubmitButton>
+            <SubmitButton pendingText="Speichere …" {...sperre}>
+              Hinzufügen
+            </SubmitButton>
             <FormMessage state={state} className="flex-1" />
           </div>
         </form>

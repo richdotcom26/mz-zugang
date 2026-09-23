@@ -9,6 +9,7 @@ import { Field } from "@/components/ui/field";
 import { Input, Select, Textarea } from "@/components/ui/input";
 import { SubmitButton, FormMessage } from "@/components/ui/form";
 import { RaumAuswahl } from "./raum-auswahl";
+import { useErfordertName } from "@/lib/use-mein-name";
 import { formatDate, formatDateTime, cn } from "@/lib/utils";
 import type { Gruppe, Raum } from "@/lib/db/schema";
 import type { PersonMitGruppe } from "@/lib/domain/personen";
@@ -33,6 +34,7 @@ export function PersonRow({
 function ViewRow({ person, onEdit }: { person: PersonMitGruppe; onEdit: () => void }) {
   const [deleteState, deleteAction] = useActionState(deletePersonAction, IDLE);
   const [aktivState, aktivAction] = useActionState(setAktivAction, IDLE);
+  const { spread: sperre } = useErfordertName();
 
   return (
     <div
@@ -92,7 +94,7 @@ function ViewRow({ person, onEdit }: { person: PersonMitGruppe; onEdit: () => vo
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
-          <Button size="sm" variant="ghost" onClick={onEdit}>
+          <Button size="sm" variant="ghost" onClick={onEdit} {...sperre}>
             Bearbeiten
           </Button>
           <Link
@@ -104,7 +106,7 @@ function ViewRow({ person, onEdit }: { person: PersonMitGruppe; onEdit: () => vo
           <form action={aktivAction}>
             <input type="hidden" name="id" value={person.id} />
             <input type="hidden" name="aktiv" value={(!person.aktiv).toString()} />
-            <SubmitButton size="sm" variant="ghost" pendingText="…">
+            <SubmitButton size="sm" variant="ghost" pendingText="…" {...sperre}>
               {person.aktiv ? "Deaktivieren" : "Aktivieren"}
             </SubmitButton>
           </form>
@@ -115,7 +117,7 @@ function ViewRow({ person, onEdit }: { person: PersonMitGruppe; onEdit: () => vo
             }}
           >
             <input type="hidden" name="id" value={person.id} />
-            <SubmitButton size="sm" variant="ghost" className="text-red-600 hover:bg-red-50" pendingText="…">
+            <SubmitButton size="sm" variant="ghost" className="text-red-600 hover:bg-red-50" pendingText="…" {...sperre}>
               Löschen
             </SubmitButton>
           </form>
@@ -173,6 +175,7 @@ function EditRow({
   onDone: () => void;
 }) {
   const [state, formAction] = useActionState(editPersonAction, IDLE);
+  const { spread: sperre } = useErfordertName();
   const errors = state?.ok === false ? state.fieldErrors : undefined;
 
   return (
@@ -265,7 +268,7 @@ function EditRow({
         <Textarea id={`bemerkung-${person.id}`} name="bemerkung" defaultValue={person.bemerkung ?? ""} rows={2} />
       </Field>
       <div className="flex items-center gap-2 sm:col-span-2">
-        <SubmitButton size="sm" pendingText="Speichere …">
+        <SubmitButton size="sm" pendingText="Speichere …" {...sperre}>
           Speichern
         </SubmitButton>
         <Button size="sm" variant="outline" type="button" onClick={onDone}>

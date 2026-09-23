@@ -51,3 +51,21 @@ export function useMeinName(): [string, (v: string) => void] {
 
   return [name, setName];
 }
+
+const SPERR_HINWEIS = 'Bitte oben "Ich bin" auswählen';
+
+/**
+ * Sperrt Änderungen (Anlegen/Bearbeiten/Löschen/Status), solange niemand oben
+ * als "Ich bin" ausgewählt ist — jede Änderung soll einer Person zuordenbar
+ * sein. `spread` lässt sich direkt auf Buttons legen: `<Button {...spread}>`.
+ */
+export function useErfordertName() {
+  const [meinName] = useMeinName();
+  const gesperrt = !meinName;
+  return {
+    meinName,
+    gesperrt,
+    titel: gesperrt ? SPERR_HINWEIS : undefined,
+    spread: { disabled: gesperrt, title: gesperrt ? SPERR_HINWEIS : undefined },
+  };
+}

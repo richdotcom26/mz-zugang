@@ -5,9 +5,11 @@ import { addGruppeAction } from "@/app/actions";
 import { IDLE } from "@/lib/domain/action-state";
 import { Input } from "@/components/ui/input";
 import { SubmitButton, FormMessage } from "@/components/ui/form";
+import { useErfordertName } from "@/lib/use-mein-name";
 
 export function NeueGruppeForm() {
   const [state, formAction] = useActionState(addGruppeAction, IDLE);
+  const { spread: sperre } = useErfordertName();
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
@@ -24,7 +26,7 @@ export function NeueGruppeForm() {
         className="w-56"
         aria-invalid={state?.ok === false || undefined}
       />
-      <SubmitButton size="sm" variant="outline" pendingText="Anlegen …">
+      <SubmitButton size="sm" variant="outline" pendingText="Anlegen …" {...sperre}>
         Gruppe anlegen
       </SubmitButton>
       <FormMessage state={state} className="basis-full" />

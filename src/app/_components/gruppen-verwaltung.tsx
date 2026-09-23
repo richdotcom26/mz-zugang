@@ -6,6 +6,7 @@ import { IDLE } from "@/lib/domain/action-state";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SubmitButton, FormMessage } from "@/components/ui/form";
+import { useErfordertName } from "@/lib/use-mein-name";
 import { NeueGruppeForm } from "./neue-gruppe-form";
 import type { Gruppe } from "@/lib/db/schema";
 
@@ -43,6 +44,7 @@ function GruppeZeile({
   const [editing, setEditing] = useState(false);
   const [state, formAction] = useActionState(editGruppeAction, IDLE);
   const [, moveAction] = useActionState(moveGruppeAction, IDLE);
+  const { gesperrt, titel, spread: sperre } = useErfordertName();
 
   if (!editing) {
     return (
@@ -54,8 +56,8 @@ function GruppeZeile({
             <input type="hidden" name="richtung" value="up" />
             <button
               type="submit"
-              disabled={istErste}
-              title="Nach oben"
+              disabled={istErste || gesperrt}
+              title={titel ?? "Nach oben"}
               className="px-1 text-muted hover:text-brand disabled:opacity-30"
             >
               ↑
@@ -66,14 +68,14 @@ function GruppeZeile({
             <input type="hidden" name="richtung" value="down" />
             <button
               type="submit"
-              disabled={istLetzte}
-              title="Nach unten"
+              disabled={istLetzte || gesperrt}
+              title={titel ?? "Nach unten"}
               className="px-1 text-muted hover:text-brand disabled:opacity-30"
             >
               ↓
             </button>
           </form>
-          <Button size="sm" variant="ghost" onClick={() => setEditing(true)}>
+          <Button size="sm" variant="ghost" onClick={() => setEditing(true)} {...sperre}>
             Bearbeiten
           </Button>
         </div>
@@ -86,7 +88,7 @@ function GruppeZeile({
       <form action={formAction} className="flex items-center gap-2">
         <input type="hidden" name="id" value={gruppe.id} />
         <Input name="name" defaultValue={gruppe.name} required autoComplete="off" className="w-56" />
-        <SubmitButton size="sm" pendingText="…">
+        <SubmitButton size="sm" pendingText="…" {...sperre}>
           Speichern
         </SubmitButton>
         <Button size="sm" variant="outline" type="button" onClick={() => setEditing(false)}>
