@@ -1,4 +1,4 @@
-# Gebäudezugang — Portal
+# MZ-Zugang — Gebäudezugang-Portal
 
 Kleines internes Portal für ca. 5 Verantwortliche, um eine Liste aller Personen mit
 Gebäudezugang zu pflegen (Name, Gruppe, Transponder-Nr., Bemerkung) und sie als
@@ -16,8 +16,9 @@ Eigenständiges Projekt, unabhängig von anderen Projekten in diesem Verzeichnis
   "Middleware" heißt jetzt "Proxy", läuft standardmäßig im Node.js-Runtime) prüft ein
   signiertes Session-Cookie (`src/lib/auth`), Passwort-Hash in `PORTAL_PASSWORD_HASH`.
 - Deploy: Vercel
-- **Preview:** Dev-Server läuft über die Parent-`.claude/launch.json` als `gebaeude-zugang-dev`
+- **Preview:** Dev-Server läuft über die Parent-`.claude/launch.json` als `mz-zugang-dev`
   auf **Port 3002** (`npm run dev --prefix … -- -p 3002`), damit 3000/3001 (Nachbarprojekte) frei bleiben.
+- **Vercel-Projekt:** `richdotcom/mz-zugang` → https://mz-zugang.vercel.app
 
 ## Struktur
 
