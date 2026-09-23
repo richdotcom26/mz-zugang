@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useActionState, useState } from "react";
 import { editPersonAction, deletePersonAction, setAktivAction } from "@/app/actions";
 import { IDLE } from "@/lib/domain/action-state";
-import { Button } from "@/components/ui/button";
+import { Button, buttonClasses } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Input, Select, Textarea } from "@/components/ui/input";
 import { SubmitButton, FormMessage } from "@/components/ui/form";
@@ -187,7 +187,15 @@ function EditRow({
       <Field label="Nachname" htmlFor={`nachname-${person.id}`} errors={errors?.nachname}>
         <Input id={`nachname-${person.id}`} name="nachname" defaultValue={person.nachname} required />
       </Field>
-      <Field label="Gruppe" htmlFor={`gruppeId-${person.id}`} errors={errors?.gruppeId}>
+
+      <Field label="Telefon" htmlFor={`telefon-${person.id}`} errors={errors?.telefon}>
+        <Input id={`telefon-${person.id}`} name="telefon" type="tel" defaultValue={person.telefon ?? ""} />
+      </Field>
+      <Field label="E-Mail" htmlFor={`email-${person.id}`} errors={errors?.email}>
+        <Input id={`email-${person.id}`} name="email" type="email" defaultValue={person.email ?? ""} />
+      </Field>
+
+      <Field label="Gruppe" htmlFor={`gruppeId-${person.id}`} errors={errors?.gruppeId} className="sm:col-span-2">
         <Select id={`gruppeId-${person.id}`} name="gruppeId" defaultValue={person.gruppeId} required>
           {gruppen.map((g) => (
             <option key={g.id} value={g.id}>
@@ -196,53 +204,11 @@ function EditRow({
           ))}
         </Select>
       </Field>
+
+      <Trenner />
+
       <Field label="Transponder-Nr." htmlFor={`transponderNr-${person.id}`} errors={errors?.transponderNr}>
         <Input id={`transponderNr-${person.id}`} name="transponderNr" defaultValue={person.transponderNr ?? ""} />
-      </Field>
-      <Field label="Telefon" htmlFor={`telefon-${person.id}`} errors={errors?.telefon}>
-        <Input id={`telefon-${person.id}`} name="telefon" type="tel" defaultValue={person.telefon ?? ""} />
-      </Field>
-      <Field label="E-Mail" htmlFor={`email-${person.id}`} errors={errors?.email}>
-        <Input id={`email-${person.id}`} name="email" type="email" defaultValue={person.email ?? ""} />
-      </Field>
-      <Field label="Befristet bis" htmlFor={`befristetBis-${person.id}`} errors={errors?.befristetBis}>
-        <Input
-          id={`befristetBis-${person.id}`}
-          name="befristetBis"
-          type="date"
-          defaultValue={person.befristetBis ?? ""}
-        />
-      </Field>
-      <Field label="Eingetragen von" htmlFor={`eingetragenVon-${person.id}`} errors={errors?.eingetragenVon}>
-        <Input
-          id={`eingetragenVon-${person.id}`}
-          name="eingetragenVon"
-          defaultValue={person.eingetragenVon ?? ""}
-        />
-      </Field>
-      <Field
-        label="Transponder Ausgabe am"
-        htmlFor={`transponderAusgabeAm-${person.id}`}
-        errors={errors?.transponderAusgabeAm}
-      >
-        <Input
-          id={`transponderAusgabeAm-${person.id}`}
-          name="transponderAusgabeAm"
-          type="date"
-          defaultValue={person.transponderAusgabeAm ?? ""}
-        />
-      </Field>
-      <Field
-        label="Transponder Rückgabe am"
-        htmlFor={`transponderRueckgabeAm-${person.id}`}
-        errors={errors?.transponderRueckgabeAm}
-      >
-        <Input
-          id={`transponderRueckgabeAm-${person.id}`}
-          name="transponderRueckgabeAm"
-          type="date"
-          defaultValue={person.transponderRueckgabeAm ?? ""}
-        />
       </Field>
       <Field
         label="Abgleich mit Key-Verwaltung am"
@@ -256,6 +222,50 @@ function EditRow({
           defaultValue={person.abgleichKeyverwaltungAm ?? ""}
         />
       </Field>
+
+      <Trenner />
+
+      <Field
+        label="Transponder Ausgabe am"
+        htmlFor={`transponderAusgabeAm-${person.id}`}
+        errors={errors?.transponderAusgabeAm}
+      >
+        <Input
+          id={`transponderAusgabeAm-${person.id}`}
+          name="transponderAusgabeAm"
+          type="date"
+          defaultValue={person.transponderAusgabeAm ?? ""}
+        />
+      </Field>
+      <Field label="Befristet bis" htmlFor={`befristetBis-${person.id}`} errors={errors?.befristetBis}>
+        <Input
+          id={`befristetBis-${person.id}`}
+          name="befristetBis"
+          type="date"
+          defaultValue={person.befristetBis ?? ""}
+        />
+      </Field>
+
+      <Field
+        label="Transponder Rückgabe am"
+        htmlFor={`transponderRueckgabeAm-${person.id}`}
+        errors={errors?.transponderRueckgabeAm}
+      >
+        <Input
+          id={`transponderRueckgabeAm-${person.id}`}
+          name="transponderRueckgabeAm"
+          type="date"
+          defaultValue={person.transponderRueckgabeAm ?? ""}
+        />
+      </Field>
+      <Field label="Übergabebeleg">
+        <Link href={`/beleg/${person.id}`} className={buttonClasses("outline", "md", "w-full justify-center")}>
+          Beleg öffnen
+        </Link>
+      </Field>
+
+      <Trenner />
+
       <Field label="Zugang zu" className="sm:col-span-2">
         <RaumAuswahl raeume={raeume} ausgewaehlt={person.raeume.map((r) => r.id)} idPrefix={`edit-${person.id}`} />
       </Field>
@@ -267,15 +277,35 @@ function EditRow({
       >
         <Textarea id={`bemerkung-${person.id}`} name="bemerkung" defaultValue={person.bemerkung ?? ""} rows={2} />
       </Field>
-      <div className="flex items-center gap-2 sm:col-span-2">
+
+      <div className="sm:col-span-2">
+        <Historie person={person} />
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2 sm:col-span-2">
         <SubmitButton size="sm" pendingText="Speichere …" {...sperre}>
           Speichern
         </SubmitButton>
         <Button size="sm" variant="outline" type="button" onClick={onDone}>
           Abbrechen
         </Button>
-        {state?.ok === false ? <FormMessage state={state} /> : null}
+        <div className="ml-auto flex items-center gap-1.5">
+          <label htmlFor={`eingetragenVon-${person.id}`} className="text-xs text-muted">
+            Eingetragen von
+          </label>
+          <Input
+            id={`eingetragenVon-${person.id}`}
+            name="eingetragenVon"
+            defaultValue={person.eingetragenVon ?? ""}
+            className="h-8 w-36"
+          />
+        </div>
+        {state?.ok === false ? <FormMessage state={state} className="basis-full" /> : null}
       </div>
     </form>
   );
+}
+
+function Trenner() {
+  return <div className="border-t border-line sm:col-span-2" />;
 }
