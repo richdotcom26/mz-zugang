@@ -15,7 +15,17 @@ export function Header({ admins }: { admins: Admin[] }) {
     <header className="flex flex-col gap-2 border-b border-line pb-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-lg font-semibold text-navy">Markus-Zentrum Zugang</h1>
+          <div className="flex items-center gap-1.5">
+            <h1 className="text-lg font-semibold text-navy">Markus-Zentrum Zugang</h1>
+            <Link
+              href="/einstellungen"
+              title="Einstellungen"
+              aria-label="Einstellungen"
+              className="flex h-6 w-6 items-center justify-center rounded-full text-muted hover:bg-brand-soft hover:text-brand"
+            >
+              ⚙
+            </Link>
+          </div>
           <p className="text-xs text-muted">Liste der Personen mit Zugang, nach Gruppe</p>
         </div>
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
@@ -24,7 +34,7 @@ export function Header({ admins }: { admins: Admin[] }) {
             <Select
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className={cn("h-8 w-32 sm:w-36", !name && "border-brand ring-2 ring-brand/25")}
+              className={cn("h-8 w-44", !name && "border-brand ring-2 ring-brand/25")}
             >
               <option value="">Bitte wählen …</option>
               {admins.map((admin) => (
@@ -34,11 +44,6 @@ export function Header({ admins }: { admins: Admin[] }) {
               ))}
             </Select>
           </label>
-          <Link href="/einstellungen">
-            <Button type="button" variant="outline" size="sm">
-              Einstellungen
-            </Button>
-          </Link>
           <form action={logout}>
             <Button type="submit" variant="outline" size="sm">
               Abmelden

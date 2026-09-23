@@ -42,61 +42,55 @@ function ViewRow({ person, onEdit }: { person: PersonMitGruppe; onEdit: () => vo
         person.aktiv && person.abgleichKeyverwaltungAm && "bg-brand-soft/40",
       )}
     >
-      <div className="flex flex-wrap items-start justify-between gap-2">
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-x-2">
-            <span
-              className={cn("h-2.5 w-2.5 shrink-0 rounded-full", person.abgleichKeyverwaltungAm ? "bg-success" : "bg-neutral-300")}
-              title={
-                person.abgleichKeyverwaltungAm
-                  ? `Mit Key-Verwaltung abgeglichen am ${formatDate(person.abgleichKeyverwaltungAm)}`
-                  : "Noch nicht mit Key-Verwaltung abgeglichen"
-              }
-            />
-            <span className="font-medium text-ink">
-              {person.vorname} {person.nachname}
-            </span>
-            {!person.aktiv ? (
-              <span className="rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-medium text-red-700">
-                Inaktiv
-              </span>
-            ) : null}
-            {person.transponderNr ? (
-              <span className="text-xs text-muted">Transponder {person.transponderNr}</span>
-            ) : null}
-          </div>
-
-          {person.telefon || person.email ? (
-            <p className="text-xs text-muted">
-              {[person.telefon, person.email].filter(Boolean).join(" · ")}
-            </p>
-          ) : null}
-
-          {person.befristetBis ? (
-            <p className="text-xs text-muted">Befristet bis {formatDate(person.befristetBis)}</p>
-          ) : null}
-
-          {person.transponderAusgabeAm || person.transponderRueckgabeAm ? (
-            <p className="text-xs text-muted">
-              Transponder
-              {person.transponderAusgabeAm ? ` ausgegeben ${formatDate(person.transponderAusgabeAm)}` : ""}
-              {person.transponderRueckgabeAm ? ` · zurückgegeben ${formatDate(person.transponderRueckgabeAm)}` : ""}
-            </p>
-          ) : null}
-
-          {person.raeume.length > 0 ? (
-            <p className="text-xs text-muted">Zugang zu {person.raeume.map((r) => r.name).join(", ")}</p>
-          ) : null}
-
-          {person.bemerkung ? <p className="text-xs text-muted">{person.bemerkung}</p> : null}
-        </div>
-
-        <div className="flex shrink-0 items-center gap-2">
-          <Button size="sm" variant="ghost" onClick={onEdit} {...sperre}>
-            Bearbeiten
-          </Button>
-        </div>
+      <div className="flex flex-wrap items-center gap-x-2">
+        <span
+          className={cn("h-2.5 w-2.5 shrink-0 rounded-full", person.abgleichKeyverwaltungAm ? "bg-success" : "bg-neutral-300")}
+          title={
+            person.abgleichKeyverwaltungAm
+              ? `Mit Key-Verwaltung abgeglichen am ${formatDate(person.abgleichKeyverwaltungAm)}`
+              : "Noch nicht mit Key-Verwaltung abgeglichen"
+          }
+        />
+        <button
+          type="button"
+          onClick={onEdit}
+          disabled={sperre.disabled}
+          title={sperre.title ?? "Bearbeiten"}
+          className="font-medium text-ink underline-offset-2 hover:text-brand hover:underline disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:no-underline"
+        >
+          {person.vorname} {person.nachname}
+        </button>
+        {!person.aktiv ? (
+          <span className="rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-medium text-red-700">
+            Inaktiv
+          </span>
+        ) : null}
+        {person.transponderNr ? (
+          <span className="text-xs text-muted">Transponder {person.transponderNr}</span>
+        ) : null}
       </div>
+
+      {person.telefon || person.email ? (
+        <p className="text-xs text-muted">{[person.telefon, person.email].filter(Boolean).join(" · ")}</p>
+      ) : null}
+
+      {person.befristetBis ? (
+        <p className="text-xs text-muted">Befristet bis {formatDate(person.befristetBis)}</p>
+      ) : null}
+
+      {person.transponderAusgabeAm || person.transponderRueckgabeAm ? (
+        <p className="text-xs text-muted">
+          Transponder
+          {person.transponderAusgabeAm ? ` ausgegeben ${formatDate(person.transponderAusgabeAm)}` : ""}
+          {person.transponderRueckgabeAm ? ` · zurückgegeben ${formatDate(person.transponderRueckgabeAm)}` : ""}
+        </p>
+      ) : null}
+
+      {person.raeume.length > 0 ? (
+        <p className="text-xs text-muted">Zugang zu {person.raeume.map((r) => r.name).join(", ")}</p>
+      ) : null}
+
+      {person.bemerkung ? <p className="text-xs text-muted">{person.bemerkung}</p> : null}
     </div>
   );
 }
@@ -315,5 +309,5 @@ function EditRow({
 }
 
 function Trenner() {
-  return <div className="h-0.5 rounded-full bg-line sm:col-span-2" />;
+  return <div className="my-2 h-[2px] rounded-full bg-ink/20 sm:col-span-2" />;
 }
