@@ -70,27 +70,44 @@ function ViewRow({ person, onEdit }: { person: PersonMitGruppe; onEdit: () => vo
         ) : null}
       </div>
 
-      {person.telefon || person.email ? (
-        <p className="text-xs text-muted">{[person.telefon, person.email].filter(Boolean).join(" · ")}</p>
-      ) : null}
-
-      {person.befristetBis ? (
-        <p className="text-xs text-muted">Befristet bis {formatDate(person.befristetBis)}</p>
-      ) : null}
-
-      {person.transponderAusgabeAm || person.transponderRueckgabeAm ? (
+      {person.transponderAusgabeAm || person.raeume.length > 0 ? (
         <p className="text-xs text-muted">
-          Transponder
-          {person.transponderAusgabeAm ? ` ausgegeben ${formatDate(person.transponderAusgabeAm)}` : ""}
-          {person.transponderRueckgabeAm ? ` · zurückgegeben ${formatDate(person.transponderRueckgabeAm)}` : ""}
+          {[
+            person.transponderAusgabeAm ? `ausgegeben ${formatDate(person.transponderAusgabeAm)}` : null,
+            person.raeume.length > 0 ? `Zugang zu ${person.raeume.map((r) => r.name).join(", ")}` : null,
+          ]
+            .filter(Boolean)
+            .join(" · ")}
         </p>
       ) : null}
+    </div>
+  );
+}
 
-      {person.raeume.length > 0 ? (
-        <p className="text-xs text-muted">Zugang zu {person.raeume.map((r) => r.name).join(", ")}</p>
-      ) : null}
+function Zusammenfassung({ person }: { person: PersonMitGruppe }) {
+  const zeilen = [
+    person.transponderNr ? `Transponder ${person.transponderNr}` : null,
+    [person.telefon, person.email].filter(Boolean).join(" · ") || null,
+    person.befristetBis ? `Befristet bis ${formatDate(person.befristetBis)}` : null,
+    person.transponderAusgabeAm || person.transponderRueckgabeAm
+      ? [
+          person.transponderAusgabeAm ? `Transponder ausgegeben ${formatDate(person.transponderAusgabeAm)}` : null,
+          person.transponderRueckgabeAm ? `zurückgegeben ${formatDate(person.transponderRueckgabeAm)}` : null,
+        ]
+          .filter(Boolean)
+          .join(" · ")
+      : null,
+    person.raeume.length > 0 ? `Zugang zu ${person.raeume.map((r) => r.name).join(", ")}` : null,
+    person.bemerkung,
+  ].filter(Boolean);
 
-      {person.bemerkung ? <p className="text-xs text-muted">{person.bemerkung}</p> : null}
+  if (zeilen.length === 0) return null;
+
+  return (
+    <div className="mb-3 flex flex-col gap-0.5 text-xs text-muted">
+      {zeilen.map((zeile, i) => (
+        <p key={i}>{zeile}</p>
+      ))}
     </div>
   );
 }
@@ -177,6 +194,9 @@ function EditRow({
           </form>
         </div>
       </div>
+
+      <Zusammenfassung person={person} />
+
       {aktivState?.ok === false ? <FormMessage state={aktivState} className="mb-2" /> : null}
       {deleteState?.ok === false ? <FormMessage state={deleteState} className="mb-2" /> : null}
 
