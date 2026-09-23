@@ -1,16 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useRef, useState } from "react";
-import {
-  editPersonAction,
-  deletePersonAction,
-  setAbgleichKeyverwaltungAction,
-  setAktivAction,
-} from "@/app/actions";
+import { useActionState, useState } from "react";
+import { editPersonAction, deletePersonAction, setAktivAction } from "@/app/actions";
 import { IDLE } from "@/lib/domain/action-state";
 import { Button } from "@/components/ui/button";
-import { Field, Label } from "@/components/ui/field";
+import { Field } from "@/components/ui/field";
 import { Input, Select, Textarea } from "@/components/ui/input";
 import { SubmitButton, FormMessage } from "@/components/ui/form";
 import { RaumAuswahl } from "./raum-auswahl";
@@ -49,7 +44,15 @@ function ViewRow({ person, onEdit }: { person: PersonMitGruppe; onEdit: () => vo
     >
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-baseline gap-x-2">
+          <div className="flex flex-wrap items-center gap-x-2">
+            <span
+              className={cn("h-2.5 w-2.5 shrink-0 rounded-full", person.abgleichKeyverwaltungAm ? "bg-success" : "bg-neutral-300")}
+              title={
+                person.abgleichKeyverwaltungAm
+                  ? `Mit Key-Verwaltung abgeglichen am ${formatDate(person.abgleichKeyverwaltungAm)}`
+                  : "Noch nicht mit Key-Verwaltung abgeglichen"
+              }
+            />
             <span className="font-medium text-ink">
               {person.vorname} {person.nachname}
             </span>
@@ -62,11 +65,6 @@ function ViewRow({ person, onEdit }: { person: PersonMitGruppe; onEdit: () => vo
               <span className="text-xs text-muted">Transponder {person.transponderNr}</span>
             ) : null}
           </div>
-
-          <p className="text-[11px] text-muted">
-            eingetragen{person.eingetragenVon ? ` von ${person.eingetragenVon}` : ""} ·{" "}
-            {formatDateTime(person.eingetragenAm)}
-          </p>
 
           {person.telefon || person.email ? (
             <p className="text-xs text-muted">
@@ -124,7 +122,6 @@ function ViewRow({ person, onEdit }: { person: PersonMitGruppe; onEdit: () => vo
         </div>
       </div>
 
-      <AbgleichKeyverwaltung person={person} />
       <Historie person={person} />
       {aktivState?.ok === false ? <FormMessage state={aktivState} /> : null}
       {deleteState?.ok === false ? <FormMessage state={deleteState} /> : null}
@@ -142,7 +139,14 @@ function Historie({ person }: { person: PersonMitGruppe }) {
       </button>
       {offen ? (
         <ul className="mt-1 flex flex-col gap-0.5">
-          <li>Hinzugefügt am: {formatDateTime(person.eingetragenAm)}</li>
+          <li>
+            Hinzugefügt am: {formatDateTime(person.eingetragenAm)}
+            {person.eingetragenVon ? ` von ${person.eingetragenVon}` : ""}
+          </li>
+          <li>
+            Abgleich mit Key-Verwaltung am:{" "}
+            {person.abgleichKeyverwaltungAm ? formatDate(person.abgleichKeyverwaltungAm) : "noch nicht"}
+          </li>
           <li>
             Beleg eingegangen am:{" "}
             {person.uebergabeSignaturAm ? formatDateTime(person.uebergabeSignaturAm) : "noch nicht"}
@@ -154,43 +158,6 @@ function Historie({ person }: { person: PersonMitGruppe }) {
         </ul>
       ) : null}
     </div>
-  );
-}
-
-function AbgleichKeyverwaltung({ person }: { person: PersonMitGruppe }) {
-  const [state, formAction] = useActionState(setAbgleichKeyverwaltungAction, IDLE);
-  const formRef = useRef<HTMLFormElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const heute = new Date().toISOString().slice(0, 10);
-
-  return (
-    <form ref={formRef} action={formAction} className="flex flex-wrap items-center gap-1.5">
-      <Label htmlFor={`abgleich-${person.id}`}>Abgleich mit Key-Verwaltung am</Label>
-      <input type="hidden" name="id" value={person.id} />
-      <Input
-        ref={inputRef}
-        id={`abgleich-${person.id}`}
-        type="date"
-        name="datum"
-        defaultValue={person.abgleichKeyverwaltungAm ?? heute}
-        onChange={() => formRef.current?.requestSubmit()}
-        className="h-8 w-[9.5rem]"
-      />
-      {person.abgleichKeyverwaltungAm ? (
-        <button
-          type="button"
-          title="Abgleich zurücksetzen"
-          className="text-xs text-muted hover:text-red-600"
-          onClick={() => {
-            if (inputRef.current) inputRef.current.value = "";
-            formRef.current?.requestSubmit();
-          }}
-        >
-          zurücksetzen
-        </button>
-      ) : null}
-      {state?.ok === false ? <FormMessage state={state} /> : null}
-    </form>
   );
 }
 
@@ -272,6 +239,18 @@ function EditRow({
           name="transponderRueckgabeAm"
           type="date"
           defaultValue={person.transponderRueckgabeAm ?? ""}
+        />
+      </Field>
+      <Field
+        label="Abgleich mit Key-Verwaltung am"
+        htmlFor={`abgleichKeyverwaltungAm-${person.id}`}
+        errors={errors?.abgleichKeyverwaltungAm}
+      >
+        <Input
+          id={`abgleichKeyverwaltungAm-${person.id}`}
+          name="abgleichKeyverwaltungAm"
+          type="date"
+          defaultValue={person.abgleichKeyverwaltungAm ?? ""}
         />
       </Field>
       <Field label="Zugang zu" className="sm:col-span-2">

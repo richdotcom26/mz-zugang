@@ -14,7 +14,7 @@ export function RaumAuswahl({
   }
 
   return (
-    <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+    <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
       {raeume.map((raum) => (
         <label key={raum.id} className="flex items-center gap-1.5 text-sm text-ink">
           <input

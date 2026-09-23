@@ -6,7 +6,6 @@ import {
   createPerson,
   updatePerson,
   deletePerson,
-  setAbgleichKeyverwaltung,
   setAktiv,
   setUebergabeSignatur,
   personSchema,
@@ -51,20 +50,6 @@ export async function deletePersonAction(_prev: ActionState, formData: FormData)
     await deletePerson(id);
     revalidatePath("/");
     return ok("Gelöscht.");
-  });
-}
-
-export async function setAbgleichKeyverwaltungAction(
-  _prev: ActionState,
-  formData: FormData,
-): Promise<ActionState> {
-  return runAction(async () => {
-    const id = Number(formData.get("id"));
-    if (!id) throw new DomainError("VALIDATION", "Ungültige ID.");
-    const datum = String(formData.get("datum") ?? "").trim() || null;
-    await setAbgleichKeyverwaltung(id, datum);
-    revalidatePath("/");
-    return ok();
   });
 }
 

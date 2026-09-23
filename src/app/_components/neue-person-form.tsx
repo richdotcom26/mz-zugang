@@ -1,8 +1,9 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { addPersonAction } from "@/app/actions";
 import { IDLE } from "@/lib/domain/action-state";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Field } from "@/components/ui/field";
 import { Input, Select, Textarea } from "@/components/ui/input";
@@ -12,6 +13,7 @@ import { RaumAuswahl } from "./raum-auswahl";
 import type { Gruppe, Raum } from "@/lib/db/schema";
 
 export function NeuePersonForm({ gruppen, raeume }: { gruppen: Gruppe[]; raeume: Raum[] }) {
+  const [offen, setOffen] = useState(false);
   const [state, formAction] = useActionState(addPersonAction, IDLE);
   const [meinName] = useMeinName();
   const formRef = useRef<HTMLFormElement>(null);
@@ -22,10 +24,21 @@ export function NeuePersonForm({ gruppen, raeume }: { gruppen: Gruppe[]; raeume:
 
   const errors = state?.ok === false ? state.fieldErrors : undefined;
 
+  if (!offen) {
+    return (
+      <Button onClick={() => setOffen(true)} className="self-start">
+        + Person hinzufügen
+      </Button>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Person hinzufügen</CardTitle>
+        <Button size="sm" variant="ghost" onClick={() => setOffen(false)}>
+          Abbrechen
+        </Button>
       </CardHeader>
       <CardContent>
         <form ref={formRef} action={formAction} className="grid gap-3 sm:grid-cols-2">

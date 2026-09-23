@@ -4,17 +4,19 @@ import { z } from "zod";
 import { db, schema } from "@/lib/db";
 import { DomainError } from "./errors";
 
+// Leeres Feld -> `null` (nicht `undefined`): drizzle lässt `undefined`-Werte beim
+// Update unangetastet, ein geleertes Feld muss die Spalte aber aktiv auf NULL setzen.
 const optionalText = z
   .string()
   .trim()
   .optional()
-  .transform((v) => (v ? v : undefined));
+  .transform((v) => (v ? v : null));
 
 const optionalDate = z
   .string()
   .trim()
   .optional()
-  .transform((v) => (v ? v : undefined));
+  .transform((v) => (v ? v : null));
 
 export const personSchema = z.object({
   vorname: z.string().trim().min(1, "Pflichtfeld"),
@@ -23,13 +25,14 @@ export const personSchema = z.object({
   transponderNr: optionalText,
   telefon: optionalText,
   email: optionalText.refine(
-    (v) => v === undefined || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
+    (v) => v === null || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
     "Ungültige E-Mail-Adresse",
   ),
   bemerkung: optionalText,
   befristetBis: optionalDate,
   transponderAusgabeAm: optionalDate,
   transponderRueckgabeAm: optionalDate,
+  abgleichKeyverwaltungAm: optionalDate,
   eingetragenVon: optionalText,
 });
 
@@ -115,16 +118,6 @@ export async function updatePerson(id: number, input: PersonInput, raumIds: numb
 export async function deletePerson(id: number) {
   const [person] = await db.delete(schema.personen).where(eq(schema.personen.id, id)).returning();
   if (!person) throw new DomainError("NOT_FOUND", "Person nicht gefunden.");
-}
-
-export async function setAbgleichKeyverwaltung(id: number, datum: string | null) {
-  const [person] = await db
-    .update(schema.personen)
-    .set({ abgleichKeyverwaltungAm: datum, updatedAt: new Date() })
-    .where(eq(schema.personen.id, id))
-    .returning();
-  if (!person) throw new DomainError("NOT_FOUND", "Person nicht gefunden.");
-  return person;
 }
 
 export async function setAktiv(id: number, aktiv: boolean) {
