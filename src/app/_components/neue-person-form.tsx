@@ -8,9 +8,10 @@ import { Field } from "@/components/ui/field";
 import { Input, Select, Textarea } from "@/components/ui/input";
 import { SubmitButton, FormMessage } from "@/components/ui/form";
 import { useMeinName } from "@/lib/use-mein-name";
-import type { Gruppe } from "@/lib/db/schema";
+import { RaumAuswahl } from "./raum-auswahl";
+import type { Gruppe, Raum } from "@/lib/db/schema";
 
-export function NeuePersonForm({ gruppen }: { gruppen: Gruppe[] }) {
+export function NeuePersonForm({ gruppen, raeume }: { gruppen: Gruppe[]; raeume: Raum[] }) {
   const [state, formAction] = useActionState(addPersonAction, IDLE);
   const [meinName] = useMeinName();
   const formRef = useRef<HTMLFormElement>(null);
@@ -49,6 +50,15 @@ export function NeuePersonForm({ gruppen }: { gruppen: Gruppe[] }) {
           <Field label="Transponder-Nr." htmlFor="transponderNr" errors={errors?.transponderNr}>
             <Input id="transponderNr" name="transponderNr" autoComplete="off" />
           </Field>
+          <Field label="Telefon" htmlFor="telefon" errors={errors?.telefon}>
+            <Input id="telefon" name="telefon" type="tel" autoComplete="off" />
+          </Field>
+          <Field label="E-Mail" htmlFor="email" errors={errors?.email}>
+            <Input id="email" name="email" type="email" autoComplete="off" />
+          </Field>
+          <Field label="Befristet bis" htmlFor="befristetBis" errors={errors?.befristetBis}>
+            <Input id="befristetBis" name="befristetBis" type="date" />
+          </Field>
           <Field label="Eingetragen von" htmlFor="eingetragenVon" errors={errors?.eingetragenVon}>
             <Input
               key={meinName}
@@ -57,6 +67,19 @@ export function NeuePersonForm({ gruppen }: { gruppen: Gruppe[] }) {
               defaultValue={meinName}
               autoComplete="off"
             />
+          </Field>
+          <Field label="Transponder Ausgabe am" htmlFor="transponderAusgabeAm" errors={errors?.transponderAusgabeAm}>
+            <Input id="transponderAusgabeAm" name="transponderAusgabeAm" type="date" />
+          </Field>
+          <Field
+            label="Transponder Rückgabe am"
+            htmlFor="transponderRueckgabeAm"
+            errors={errors?.transponderRueckgabeAm}
+          >
+            <Input id="transponderRueckgabeAm" name="transponderRueckgabeAm" type="date" />
+          </Field>
+          <Field label="Zugang zu" className="sm:col-span-2">
+            <RaumAuswahl raeume={raeume} idPrefix="neu" />
           </Field>
           <Field label="Bemerkung" htmlFor="bemerkung" className="sm:col-span-2" errors={errors?.bemerkung}>
             <Textarea id="bemerkung" name="bemerkung" rows={2} />

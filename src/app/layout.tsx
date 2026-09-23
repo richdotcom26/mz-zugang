@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Gebäudezugang",
+  title: "Markus-Zentrum Zugang",
   description: "Liste der Personen mit Gebäudezugang, nach Gruppen",
 };
 

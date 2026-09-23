@@ -1,106 +1,208 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useRef, useState } from "react";
-import { editPersonAction, deletePersonAction, toggleAbgeglichenAction } from "@/app/actions";
+import {
+  editPersonAction,
+  deletePersonAction,
+  setAbgleichKeyverwaltungAction,
+  setAktivAction,
+} from "@/app/actions";
 import { IDLE } from "@/lib/domain/action-state";
 import { Button } from "@/components/ui/button";
-import { Field } from "@/components/ui/field";
+import { Field, Label } from "@/components/ui/field";
 import { Input, Select, Textarea } from "@/components/ui/input";
 import { SubmitButton, FormMessage } from "@/components/ui/form";
-import { useMeinName } from "@/lib/use-mein-name";
-import { formatDateTime, cn } from "@/lib/utils";
-import type { Gruppe } from "@/lib/db/schema";
+import { RaumAuswahl } from "./raum-auswahl";
+import { formatDate, formatDateTime, cn } from "@/lib/utils";
+import type { Gruppe, Raum } from "@/lib/db/schema";
 import type { PersonMitGruppe } from "@/lib/domain/personen";
 
-export function PersonRow({ person, gruppen }: { person: PersonMitGruppe; gruppen: Gruppe[] }) {
+export function PersonRow({
+  person,
+  gruppen,
+  raeume,
+}: {
+  person: PersonMitGruppe;
+  gruppen: Gruppe[];
+  raeume: Raum[];
+}) {
   const [editing, setEditing] = useState(false);
 
   if (editing) {
-    return <EditRow person={person} gruppen={gruppen} onDone={() => setEditing(false)} />;
+    return <EditRow person={person} gruppen={gruppen} raeume={raeume} onDone={() => setEditing(false)} />;
   }
   return <ViewRow person={person} onEdit={() => setEditing(true)} />;
 }
 
 function ViewRow({ person, onEdit }: { person: PersonMitGruppe; onEdit: () => void }) {
-  const [meinName] = useMeinName();
-  const [state, formAction] = useActionState(toggleAbgeglichenAction, IDLE);
-  const toggleFormRef = useRef<HTMLFormElement>(null);
-
   const [deleteState, deleteAction] = useActionState(deletePersonAction, IDLE);
+  const [aktivState, aktivAction] = useActionState(setAktivAction, IDLE);
 
   return (
     <div
       className={cn(
-        "flex flex-col gap-1 border-b border-line px-3 py-2.5 last:border-b-0 sm:flex-row sm:items-start sm:gap-3",
-        person.abgeglichen && "bg-brand-soft/40",
+        "flex flex-col gap-1.5 border-b border-line px-3 py-2.5 last:border-b-0",
+        !person.aktiv && "opacity-60",
+        person.aktiv && person.abgleichKeyverwaltungAm && "bg-brand-soft/40",
       )}
     >
-      <form ref={toggleFormRef} action={formAction} className="flex shrink-0 items-center pt-0.5">
-        <input type="hidden" name="id" value={person.id} />
-        <input type="hidden" name="von" value={meinName} />
-        <input
-          type="checkbox"
-          name="abgeglichen"
-          value="true"
-          defaultChecked={person.abgeglichen}
-          onChange={() => toggleFormRef.current?.requestSubmit()}
-          title="Mit Transponder-Software abgeglichen"
-          className="h-4 w-4 accent-brand"
-        />
-      </form>
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-baseline gap-x-2">
+            <span className="font-medium text-ink">
+              {person.vorname} {person.nachname}
+            </span>
+            {!person.aktiv ? (
+              <span className="rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-medium text-red-700">
+                Inaktiv
+              </span>
+            ) : null}
+            {person.transponderNr ? (
+              <span className="text-xs text-muted">Transponder {person.transponderNr}</span>
+            ) : null}
+          </div>
 
-      <div className="min-w-0 flex-1">
-        <div className="flex flex-wrap items-baseline gap-x-2">
-          <span className="font-medium text-ink">
-            {person.vorname} {person.nachname}
-          </span>
-          {person.transponderNr ? (
-            <span className="text-xs text-muted">Transponder {person.transponderNr}</span>
+          <p className="text-[11px] text-muted">
+            eingetragen{person.eingetragenVon ? ` von ${person.eingetragenVon}` : ""} ·{" "}
+            {formatDateTime(person.eingetragenAm)}
+          </p>
+
+          {person.telefon || person.email ? (
+            <p className="text-xs text-muted">
+              {[person.telefon, person.email].filter(Boolean).join(" · ")}
+            </p>
           ) : null}
+
+          {person.befristetBis ? (
+            <p className="text-xs text-muted">Befristet bis {formatDate(person.befristetBis)}</p>
+          ) : null}
+
+          {person.transponderAusgabeAm || person.transponderRueckgabeAm ? (
+            <p className="text-xs text-muted">
+              Transponder
+              {person.transponderAusgabeAm ? ` ausgegeben ${formatDate(person.transponderAusgabeAm)}` : ""}
+              {person.transponderRueckgabeAm ? ` · zurückgegeben ${formatDate(person.transponderRueckgabeAm)}` : ""}
+            </p>
+          ) : null}
+
+          {person.raeume.length > 0 ? (
+            <p className="text-xs text-muted">Zugang zu {person.raeume.map((r) => r.name).join(", ")}</p>
+          ) : null}
+
+          {person.bemerkung ? <p className="text-xs text-muted">{person.bemerkung}</p> : null}
         </div>
-        {person.bemerkung ? <p className="text-xs text-muted">{person.bemerkung}</p> : null}
-        <p className="text-[11px] text-muted">
-          eingetragen{person.eingetragenVon ? ` von ${person.eingetragenVon}` : ""} ·{" "}
-          {formatDateTime(person.eingetragenAm)}
-          {person.abgeglichen ? (
-            <>
-              {" "}
-              · abgeglichen{person.abgeglichenVon ? ` von ${person.abgeglichenVon}` : ""} ·{" "}
-              {formatDateTime(person.abgeglichenAm)}
-            </>
-          ) : null}
-        </p>
-        {state?.ok === false ? <FormMessage state={state} className="mt-1" /> : null}
+
+        <div className="flex shrink-0 items-center gap-2">
+          <Button size="sm" variant="ghost" onClick={onEdit}>
+            Bearbeiten
+          </Button>
+          <Link
+            href={`/beleg/${person.id}`}
+            className="text-xs font-medium text-brand underline-offset-2 hover:underline"
+          >
+            Übergabebeleg
+          </Link>
+          <form action={aktivAction}>
+            <input type="hidden" name="id" value={person.id} />
+            <input type="hidden" name="aktiv" value={(!person.aktiv).toString()} />
+            <SubmitButton size="sm" variant="ghost" pendingText="…">
+              {person.aktiv ? "Deaktivieren" : "Aktivieren"}
+            </SubmitButton>
+          </form>
+          <form
+            action={deleteAction}
+            onSubmit={(e) => {
+              if (!window.confirm(`"${person.vorname} ${person.nachname}" wirklich löschen?`)) e.preventDefault();
+            }}
+          >
+            <input type="hidden" name="id" value={person.id} />
+            <SubmitButton size="sm" variant="ghost" className="text-red-600 hover:bg-red-50" pendingText="…">
+              Löschen
+            </SubmitButton>
+          </form>
+        </div>
       </div>
 
-      <div className="flex shrink-0 items-center gap-2">
-        <Button size="sm" variant="ghost" onClick={onEdit}>
-          Bearbeiten
-        </Button>
-        <form
-          action={deleteAction}
-          onSubmit={(e) => {
-            if (!window.confirm(`"${person.vorname} ${person.nachname}" wirklich löschen?`)) e.preventDefault();
-          }}
-        >
-          <input type="hidden" name="id" value={person.id} />
-          <SubmitButton size="sm" variant="ghost" className="text-red-600 hover:bg-red-50" pendingText="…">
-            Löschen
-          </SubmitButton>
-        </form>
-      </div>
+      <AbgleichKeyverwaltung person={person} />
+      <Historie person={person} />
+      {aktivState?.ok === false ? <FormMessage state={aktivState} /> : null}
       {deleteState?.ok === false ? <FormMessage state={deleteState} /> : null}
     </div>
+  );
+}
+
+function Historie({ person }: { person: PersonMitGruppe }) {
+  const [offen, setOffen] = useState(false);
+
+  return (
+    <div className="text-[11px] text-muted">
+      <button type="button" onClick={() => setOffen((v) => !v)} className="underline-offset-2 hover:underline">
+        {offen ? "Verlauf ausblenden" : "Verlauf anzeigen"}
+      </button>
+      {offen ? (
+        <ul className="mt-1 flex flex-col gap-0.5">
+          <li>Hinzugefügt am: {formatDateTime(person.eingetragenAm)}</li>
+          <li>
+            Beleg eingegangen am:{" "}
+            {person.uebergabeSignaturAm ? formatDateTime(person.uebergabeSignaturAm) : "noch nicht"}
+          </li>
+          <li>
+            Status: {person.aktiv ? "aktiv" : "inaktiv"}
+            {person.aktivGeaendertAm ? ` seit ${formatDateTime(person.aktivGeaendertAm)}` : ""}
+          </li>
+        </ul>
+      ) : null}
+    </div>
+  );
+}
+
+function AbgleichKeyverwaltung({ person }: { person: PersonMitGruppe }) {
+  const [state, formAction] = useActionState(setAbgleichKeyverwaltungAction, IDLE);
+  const formRef = useRef<HTMLFormElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const heute = new Date().toISOString().slice(0, 10);
+
+  return (
+    <form ref={formRef} action={formAction} className="flex flex-wrap items-center gap-1.5">
+      <Label htmlFor={`abgleich-${person.id}`}>Abgleich mit Key-Verwaltung am</Label>
+      <input type="hidden" name="id" value={person.id} />
+      <Input
+        ref={inputRef}
+        id={`abgleich-${person.id}`}
+        type="date"
+        name="datum"
+        defaultValue={person.abgleichKeyverwaltungAm ?? heute}
+        onChange={() => formRef.current?.requestSubmit()}
+        className="h-8 w-[9.5rem]"
+      />
+      {person.abgleichKeyverwaltungAm ? (
+        <button
+          type="button"
+          title="Abgleich zurücksetzen"
+          className="text-xs text-muted hover:text-red-600"
+          onClick={() => {
+            if (inputRef.current) inputRef.current.value = "";
+            formRef.current?.requestSubmit();
+          }}
+        >
+          zurücksetzen
+        </button>
+      ) : null}
+      {state?.ok === false ? <FormMessage state={state} /> : null}
+    </form>
   );
 }
 
 function EditRow({
   person,
   gruppen,
+  raeume,
   onDone,
 }: {
   person: PersonMitGruppe;
   gruppen: Gruppe[];
+  raeume: Raum[];
   onDone: () => void;
 }) {
   const [state, formAction] = useActionState(editPersonAction, IDLE);
@@ -127,12 +229,53 @@ function EditRow({
       <Field label="Transponder-Nr." htmlFor={`transponderNr-${person.id}`} errors={errors?.transponderNr}>
         <Input id={`transponderNr-${person.id}`} name="transponderNr" defaultValue={person.transponderNr ?? ""} />
       </Field>
+      <Field label="Telefon" htmlFor={`telefon-${person.id}`} errors={errors?.telefon}>
+        <Input id={`telefon-${person.id}`} name="telefon" type="tel" defaultValue={person.telefon ?? ""} />
+      </Field>
+      <Field label="E-Mail" htmlFor={`email-${person.id}`} errors={errors?.email}>
+        <Input id={`email-${person.id}`} name="email" type="email" defaultValue={person.email ?? ""} />
+      </Field>
+      <Field label="Befristet bis" htmlFor={`befristetBis-${person.id}`} errors={errors?.befristetBis}>
+        <Input
+          id={`befristetBis-${person.id}`}
+          name="befristetBis"
+          type="date"
+          defaultValue={person.befristetBis ?? ""}
+        />
+      </Field>
       <Field label="Eingetragen von" htmlFor={`eingetragenVon-${person.id}`} errors={errors?.eingetragenVon}>
         <Input
           id={`eingetragenVon-${person.id}`}
           name="eingetragenVon"
           defaultValue={person.eingetragenVon ?? ""}
         />
+      </Field>
+      <Field
+        label="Transponder Ausgabe am"
+        htmlFor={`transponderAusgabeAm-${person.id}`}
+        errors={errors?.transponderAusgabeAm}
+      >
+        <Input
+          id={`transponderAusgabeAm-${person.id}`}
+          name="transponderAusgabeAm"
+          type="date"
+          defaultValue={person.transponderAusgabeAm ?? ""}
+        />
+      </Field>
+      <Field
+        label="Transponder Rückgabe am"
+        htmlFor={`transponderRueckgabeAm-${person.id}`}
+        errors={errors?.transponderRueckgabeAm}
+      >
+        <Input
+          id={`transponderRueckgabeAm-${person.id}`}
+          name="transponderRueckgabeAm"
+          type="date"
+          defaultValue={person.transponderRueckgabeAm ?? ""}
+        />
+      </Field>
+      <Field label="Zugang zu" className="sm:col-span-2">
+        <RaumAuswahl raeume={raeume} ausgewaehlt={person.raeume.map((r) => r.id)} idPrefix={`edit-${person.id}`} />
       </Field>
       <Field
         label="Bemerkung"
