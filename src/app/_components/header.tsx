@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { logout } from "@/app/login/actions";
-import { Button } from "@/components/ui/button";
+import { Button, buttonClasses } from "@/components/ui/button";
 import { Select } from "@/components/ui/input";
 import { useMeinName } from "@/lib/use-mein-name";
 import { cn } from "@/lib/utils";
@@ -15,15 +15,10 @@ export function Header({ admins }: { admins: Admin[] }) {
     <header className="flex flex-col gap-2 border-b border-line pb-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-2">
             <h1 className="text-lg font-semibold text-navy">Markus-Zentrum Zugang</h1>
-            <Link
-              href="/einstellungen"
-              title="Einstellungen"
-              aria-label="Einstellungen"
-              className="flex h-6 w-6 items-center justify-center rounded-full text-muted hover:bg-brand-soft hover:text-brand"
-            >
-              ⚙
+            <Link href="/einstellungen" className={buttonClasses("outline", "sm")}>
+              ⚙ Einstellungen
             </Link>
           </div>
           <p className="text-xs text-muted">Liste der Personen mit Zugang, nach Gruppe</p>

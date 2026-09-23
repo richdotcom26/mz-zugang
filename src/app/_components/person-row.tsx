@@ -69,17 +69,6 @@ function ViewRow({ person, onEdit }: { person: PersonMitGruppe; onEdit: () => vo
           <span className="text-xs text-muted">Transponder {person.transponderNr}</span>
         ) : null}
       </div>
-
-      {person.transponderAusgabeAm || person.raeume.length > 0 ? (
-        <p className="text-xs text-muted">
-          {[
-            person.transponderAusgabeAm ? `ausgegeben ${formatDate(person.transponderAusgabeAm)}` : null,
-            person.raeume.length > 0 ? `Zugang zu ${person.raeume.map((r) => r.name).join(", ")}` : null,
-          ]
-            .filter(Boolean)
-            .join(" · ")}
-        </p>
-      ) : null}
     </div>
   );
 }
