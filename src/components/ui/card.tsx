@@ -8,7 +8,7 @@ export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElemen
 export function CardHeader({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("flex items-center justify-between gap-3 border-b border-line px-4 py-3", className)}
+      className={cn("flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b border-line px-4 py-3", className)}
       {...props}
     />
   );

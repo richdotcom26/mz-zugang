@@ -32,8 +32,6 @@ export function PersonRow({
 }
 
 function ViewRow({ person, onEdit }: { person: PersonMitGruppe; onEdit: () => void }) {
-  const [deleteState, deleteAction] = useActionState(deletePersonAction, IDLE);
-  const [aktivState, aktivAction] = useActionState(setAktivAction, IDLE);
   const { spread: sperre } = useErfordertName();
 
   return (
@@ -97,36 +95,8 @@ function ViewRow({ person, onEdit }: { person: PersonMitGruppe; onEdit: () => vo
           <Button size="sm" variant="ghost" onClick={onEdit} {...sperre}>
             Bearbeiten
           </Button>
-          <Link
-            href={`/beleg/${person.id}`}
-            className="text-xs font-medium text-brand underline-offset-2 hover:underline"
-          >
-            Übergabebeleg
-          </Link>
-          <form action={aktivAction}>
-            <input type="hidden" name="id" value={person.id} />
-            <input type="hidden" name="aktiv" value={(!person.aktiv).toString()} />
-            <SubmitButton size="sm" variant="ghost" pendingText="…" {...sperre}>
-              {person.aktiv ? "Deaktivieren" : "Aktivieren"}
-            </SubmitButton>
-          </form>
-          <form
-            action={deleteAction}
-            onSubmit={(e) => {
-              if (!window.confirm(`"${person.vorname} ${person.nachname}" wirklich löschen?`)) e.preventDefault();
-            }}
-          >
-            <input type="hidden" name="id" value={person.id} />
-            <SubmitButton size="sm" variant="ghost" className="text-red-600 hover:bg-red-50" pendingText="…" {...sperre}>
-              Löschen
-            </SubmitButton>
-          </form>
         </div>
       </div>
-
-      <Historie person={person} />
-      {aktivState?.ok === false ? <FormMessage state={aktivState} /> : null}
-      {deleteState?.ok === false ? <FormMessage state={deleteState} /> : null}
     </div>
   );
 }
@@ -175,137 +145,175 @@ function EditRow({
   onDone: () => void;
 }) {
   const [state, formAction] = useActionState(editPersonAction, IDLE);
+  const [aktivState, aktivAction] = useActionState(setAktivAction, IDLE);
+  const [deleteState, deleteAction] = useActionState(deletePersonAction, IDLE);
   const { spread: sperre } = useErfordertName();
   const errors = state?.ok === false ? state.fieldErrors : undefined;
 
   return (
-    <form action={formAction} className="grid gap-3 border-b border-line bg-brand-soft/30 px-3 py-3 sm:grid-cols-2">
-      <input type="hidden" name="id" value={person.id} />
-      <Field label="Vorname" htmlFor={`vorname-${person.id}`} errors={errors?.vorname}>
-        <Input id={`vorname-${person.id}`} name="vorname" defaultValue={person.vorname} required />
-      </Field>
-      <Field label="Nachname" htmlFor={`nachname-${person.id}`} errors={errors?.nachname}>
-        <Input id={`nachname-${person.id}`} name="nachname" defaultValue={person.nachname} required />
-      </Field>
-
-      <Field label="Telefon" htmlFor={`telefon-${person.id}`} errors={errors?.telefon}>
-        <Input id={`telefon-${person.id}`} name="telefon" type="tel" defaultValue={person.telefon ?? ""} />
-      </Field>
-      <Field label="E-Mail" htmlFor={`email-${person.id}`} errors={errors?.email}>
-        <Input id={`email-${person.id}`} name="email" type="email" defaultValue={person.email ?? ""} />
-      </Field>
-
-      <Field label="Gruppe" htmlFor={`gruppeId-${person.id}`} errors={errors?.gruppeId} className="sm:col-span-2">
-        <Select id={`gruppeId-${person.id}`} name="gruppeId" defaultValue={person.gruppeId} required>
-          {gruppen.map((g) => (
-            <option key={g.id} value={g.id}>
-              {g.name}
-            </option>
-          ))}
-        </Select>
-      </Field>
-
-      <Trenner />
-
-      <Field label="Transponder-Nr." htmlFor={`transponderNr-${person.id}`} errors={errors?.transponderNr}>
-        <Input id={`transponderNr-${person.id}`} name="transponderNr" defaultValue={person.transponderNr ?? ""} />
-      </Field>
-      <Field
-        label="Abgleich mit Key-Verwaltung am"
-        htmlFor={`abgleichKeyverwaltungAm-${person.id}`}
-        errors={errors?.abgleichKeyverwaltungAm}
-      >
-        <Input
-          id={`abgleichKeyverwaltungAm-${person.id}`}
-          name="abgleichKeyverwaltungAm"
-          type="date"
-          defaultValue={person.abgleichKeyverwaltungAm ?? ""}
-        />
-      </Field>
-
-      <Trenner />
-
-      <Field
-        label="Transponder Ausgabe am"
-        htmlFor={`transponderAusgabeAm-${person.id}`}
-        errors={errors?.transponderAusgabeAm}
-      >
-        <Input
-          id={`transponderAusgabeAm-${person.id}`}
-          name="transponderAusgabeAm"
-          type="date"
-          defaultValue={person.transponderAusgabeAm ?? ""}
-        />
-      </Field>
-      <Field label="Befristet bis" htmlFor={`befristetBis-${person.id}`} errors={errors?.befristetBis}>
-        <Input
-          id={`befristetBis-${person.id}`}
-          name="befristetBis"
-          type="date"
-          defaultValue={person.befristetBis ?? ""}
-        />
-      </Field>
-
-      <Field
-        label="Transponder Rückgabe am"
-        htmlFor={`transponderRueckgabeAm-${person.id}`}
-        errors={errors?.transponderRueckgabeAm}
-      >
-        <Input
-          id={`transponderRueckgabeAm-${person.id}`}
-          name="transponderRueckgabeAm"
-          type="date"
-          defaultValue={person.transponderRueckgabeAm ?? ""}
-        />
-      </Field>
-      <Field label="Übergabebeleg">
-        <Link href={`/beleg/${person.id}`} className={buttonClasses("outline", "md", "w-full justify-center")}>
-          Beleg öffnen
-        </Link>
-      </Field>
-
-      <Trenner />
-
-      <Field label="Zugang zu" className="sm:col-span-2">
-        <RaumAuswahl raeume={raeume} ausgewaehlt={person.raeume.map((r) => r.id)} idPrefix={`edit-${person.id}`} />
-      </Field>
-      <Field
-        label="Bemerkung"
-        htmlFor={`bemerkung-${person.id}`}
-        className="sm:col-span-2"
-        errors={errors?.bemerkung}
-      >
-        <Textarea id={`bemerkung-${person.id}`} name="bemerkung" defaultValue={person.bemerkung ?? ""} rows={2} />
-      </Field>
-
-      <div className="sm:col-span-2">
-        <Historie person={person} />
-      </div>
-
-      <div className="flex flex-wrap items-center gap-2 sm:col-span-2">
-        <SubmitButton size="sm" pendingText="Speichere …" {...sperre}>
-          Speichern
-        </SubmitButton>
-        <Button size="sm" variant="outline" type="button" onClick={onDone}>
-          Abbrechen
-        </Button>
-        <div className="ml-auto flex items-center gap-1.5">
-          <label htmlFor={`eingetragenVon-${person.id}`} className="text-xs text-muted">
-            Eingetragen von
-          </label>
-          <Input
-            id={`eingetragenVon-${person.id}`}
-            name="eingetragenVon"
-            defaultValue={person.eingetragenVon ?? ""}
-            className="h-8 w-36"
-          />
+    <div className="border-b border-line bg-brand-soft/30 px-3 py-3 last:border-b-0">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <p className="text-sm font-medium text-ink">
+          {person.vorname} {person.nachname}
+        </p>
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            href={`/beleg/${person.id}`}
+            className="text-xs font-medium text-brand underline-offset-2 hover:underline"
+          >
+            Übergabebeleg
+          </Link>
+          <form action={aktivAction}>
+            <input type="hidden" name="id" value={person.id} />
+            <input type="hidden" name="aktiv" value={(!person.aktiv).toString()} />
+            <SubmitButton size="sm" variant="ghost" pendingText="…" {...sperre}>
+              {person.aktiv ? "Deaktivieren" : "Aktivieren"}
+            </SubmitButton>
+          </form>
+          <form
+            action={deleteAction}
+            onSubmit={(e) => {
+              if (!window.confirm(`"${person.vorname} ${person.nachname}" wirklich löschen?`)) e.preventDefault();
+            }}
+          >
+            <input type="hidden" name="id" value={person.id} />
+            <SubmitButton size="sm" variant="ghost" className="text-red-600 hover:bg-red-50" pendingText="…" {...sperre}>
+              Löschen
+            </SubmitButton>
+          </form>
         </div>
-        {state?.ok === false ? <FormMessage state={state} className="basis-full" /> : null}
       </div>
-    </form>
+      {aktivState?.ok === false ? <FormMessage state={aktivState} className="mb-2" /> : null}
+      {deleteState?.ok === false ? <FormMessage state={deleteState} className="mb-2" /> : null}
+
+      <form action={formAction} className="grid gap-3 sm:grid-cols-2">
+        <input type="hidden" name="id" value={person.id} />
+        <Field label="Vorname" htmlFor={`vorname-${person.id}`} errors={errors?.vorname}>
+          <Input id={`vorname-${person.id}`} name="vorname" defaultValue={person.vorname} required />
+        </Field>
+        <Field label="Nachname" htmlFor={`nachname-${person.id}`} errors={errors?.nachname}>
+          <Input id={`nachname-${person.id}`} name="nachname" defaultValue={person.nachname} required />
+        </Field>
+
+        <Field label="Telefon" htmlFor={`telefon-${person.id}`} errors={errors?.telefon}>
+          <Input id={`telefon-${person.id}`} name="telefon" type="tel" defaultValue={person.telefon ?? ""} />
+        </Field>
+        <Field label="E-Mail" htmlFor={`email-${person.id}`} errors={errors?.email}>
+          <Input id={`email-${person.id}`} name="email" type="email" defaultValue={person.email ?? ""} />
+        </Field>
+
+        <Field label="Gruppe" htmlFor={`gruppeId-${person.id}`} errors={errors?.gruppeId} className="sm:col-span-2">
+          <Select id={`gruppeId-${person.id}`} name="gruppeId" defaultValue={person.gruppeId} required>
+            {gruppen.map((g) => (
+              <option key={g.id} value={g.id}>
+                {g.name}
+              </option>
+            ))}
+          </Select>
+        </Field>
+
+        <Trenner />
+
+        <Field label="Transponder-Nr." htmlFor={`transponderNr-${person.id}`} errors={errors?.transponderNr}>
+          <Input id={`transponderNr-${person.id}`} name="transponderNr" defaultValue={person.transponderNr ?? ""} />
+        </Field>
+        <Field
+          label="Abgleich mit Key-Verwaltung am"
+          htmlFor={`abgleichKeyverwaltungAm-${person.id}`}
+          errors={errors?.abgleichKeyverwaltungAm}
+        >
+          <Input
+            id={`abgleichKeyverwaltungAm-${person.id}`}
+            name="abgleichKeyverwaltungAm"
+            type="date"
+            defaultValue={person.abgleichKeyverwaltungAm ?? ""}
+          />
+        </Field>
+
+        <Trenner />
+
+        <Field
+          label="Transponder Ausgabe am"
+          htmlFor={`transponderAusgabeAm-${person.id}`}
+          errors={errors?.transponderAusgabeAm}
+        >
+          <Input
+            id={`transponderAusgabeAm-${person.id}`}
+            name="transponderAusgabeAm"
+            type="date"
+            defaultValue={person.transponderAusgabeAm ?? ""}
+          />
+        </Field>
+        <Field label="Befristet bis" htmlFor={`befristetBis-${person.id}`} errors={errors?.befristetBis}>
+          <Input
+            id={`befristetBis-${person.id}`}
+            name="befristetBis"
+            type="date"
+            defaultValue={person.befristetBis ?? ""}
+          />
+        </Field>
+
+        <Field
+          label="Transponder Rückgabe am"
+          htmlFor={`transponderRueckgabeAm-${person.id}`}
+          errors={errors?.transponderRueckgabeAm}
+        >
+          <Input
+            id={`transponderRueckgabeAm-${person.id}`}
+            name="transponderRueckgabeAm"
+            type="date"
+            defaultValue={person.transponderRueckgabeAm ?? ""}
+          />
+        </Field>
+        <Field label="Übergabebeleg">
+          <Link href={`/beleg/${person.id}`} className={buttonClasses("outline", "md", "w-full justify-center")}>
+            Beleg öffnen
+          </Link>
+        </Field>
+
+        <Trenner />
+
+        <Field label="Zugang zu" className="sm:col-span-2">
+          <RaumAuswahl raeume={raeume} ausgewaehlt={person.raeume.map((r) => r.id)} idPrefix={`edit-${person.id}`} />
+        </Field>
+        <Field
+          label="Bemerkung"
+          htmlFor={`bemerkung-${person.id}`}
+          className="sm:col-span-2"
+          errors={errors?.bemerkung}
+        >
+          <Textarea id={`bemerkung-${person.id}`} name="bemerkung" defaultValue={person.bemerkung ?? ""} rows={2} />
+        </Field>
+
+        <div className="sm:col-span-2">
+          <Historie person={person} />
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2 sm:col-span-2">
+          <SubmitButton size="sm" pendingText="Speichere …" {...sperre}>
+            Speichern
+          </SubmitButton>
+          <Button size="sm" variant="outline" type="button" onClick={onDone}>
+            Abbrechen
+          </Button>
+          <div className="flex basis-full items-center gap-1.5 sm:basis-auto sm:ml-auto">
+            <label htmlFor={`eingetragenVon-${person.id}`} className="text-xs text-muted">
+              Eingetragen von
+            </label>
+            <Input
+              id={`eingetragenVon-${person.id}`}
+              name="eingetragenVon"
+              defaultValue={person.eingetragenVon ?? ""}
+              className="h-8 flex-1 sm:w-36 sm:flex-none"
+            />
+          </div>
+          {state?.ok === false ? <FormMessage state={state} className="basis-full" /> : null}
+        </div>
+      </form>
+    </div>
   );
 }
 
 function Trenner() {
-  return <div className="border-t border-line sm:col-span-2" />;
+  return <div className="h-0.5 rounded-full bg-line sm:col-span-2" />;
 }

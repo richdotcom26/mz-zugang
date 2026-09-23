@@ -18,13 +18,13 @@ export function Header({ admins }: { admins: Admin[] }) {
           <h1 className="text-lg font-semibold text-navy">Markus-Zentrum Zugang</h1>
           <p className="text-xs text-muted">Liste der Personen mit Zugang, nach Gruppe</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <label className="flex items-center gap-2 text-xs text-muted">
             Ich bin
             <Select
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className={cn("h-8 w-36", !name && "border-brand ring-2 ring-brand/25")}
+              className={cn("h-8 w-32 sm:w-36", !name && "border-brand ring-2 ring-brand/25")}
             >
               <option value="">Bitte wählen …</option>
               {admins.map((admin) => (

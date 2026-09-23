@@ -28,7 +28,7 @@ export function BelegAnsicht({ person }: { person: PersonBeleg }) {
         <h1 className="text-lg font-semibold text-navy">Transponder-Übergabebeleg</h1>
         <p className="mb-4 text-xs text-muted">Markus-Zentrum — Gebäudezugang</p>
 
-        <dl className="grid grid-cols-[8rem_1fr] gap-y-1.5 text-sm">
+        <dl className="grid grid-cols-1 gap-y-1.5 text-sm sm:grid-cols-[8rem_1fr]">
           <dt className="text-muted">Name</dt>
           <dd>
             {person.vorname} {person.nachname}
@@ -89,8 +89,14 @@ function SignaturPad({ personId, onGespeichert }: { personId: number; onGespeich
   }, [state]);
 
   function position(e: React.PointerEvent<HTMLCanvasElement>) {
-    const rect = e.currentTarget.getBoundingClientRect();
-    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    const canvas = e.currentTarget;
+    const rect = canvas.getBoundingClientRect();
+    // Canvas wird per CSS (w-full) auf die Bildschirmbreite skaliert, das interne
+    // Koordinatensystem bleibt aber 500x140 -> Zeigerposition muss umgerechnet werden,
+    // sonst zeichnet man auf kleinen Bildschirmen (Handy) neben dem tatsächlichen Stift.
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    return { x: (e.clientX - rect.left) * scaleX, y: (e.clientY - rect.top) * scaleY };
   }
 
   function start(e: React.PointerEvent<HTMLCanvasElement>) {

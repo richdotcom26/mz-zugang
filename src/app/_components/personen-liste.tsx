@@ -47,14 +47,18 @@ export function PersonenListe({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
         <Input
           value={suche}
           onChange={(e) => setSuche(e.target.value)}
           placeholder="Suche (Name, Transponder, Telefon, E-Mail, Bemerkung) …"
-          className="min-w-[16rem] flex-1"
+          className="w-full sm:min-w-[16rem] sm:flex-1"
         />
-        <Select value={gruppeFilter} onChange={(e) => setGruppeFilter(e.target.value)} className="w-44">
+        <Select
+          value={gruppeFilter}
+          onChange={(e) => setGruppeFilter(e.target.value)}
+          className="w-full sm:w-44"
+        >
           <option value="">Alle Gruppen</option>
           {gruppen.map((g) => (
             <option key={g.id} value={g.id}>
@@ -62,7 +66,7 @@ export function PersonenListe({
             </option>
           ))}
         </Select>
-        <Select value={raumFilter} onChange={(e) => setRaumFilter(e.target.value)} className="w-44">
+        <Select value={raumFilter} onChange={(e) => setRaumFilter(e.target.value)} className="w-full sm:w-44">
           <option value="">Alle Räume</option>
           {raeume.map((r) => (
             <option key={r.id} value={r.id}>
