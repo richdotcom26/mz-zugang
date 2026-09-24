@@ -57,7 +57,7 @@ function ViewRow({ person, onEdit }: { person: PersonMitGruppe; onEdit: () => vo
           onClick={onEdit}
           disabled={sperre.disabled}
           title={sperre.title ?? "Bearbeiten"}
-          className="font-medium text-ink underline-offset-2 hover:text-brand hover:underline disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:no-underline"
+          className="text-sm font-medium text-ink underline-offset-2 hover:text-brand hover:underline disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:no-underline"
         >
           {person.vorname} {person.nachname}
         </button>
