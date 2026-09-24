@@ -10,6 +10,7 @@ import { Input, Select, Textarea } from "@/components/ui/input";
 import { SubmitButton, FormMessage } from "@/components/ui/form";
 import { useMeinName, useErfordertName } from "@/lib/use-mein-name";
 import { RaumAuswahl } from "./raum-auswahl";
+import { DatumFeld } from "./datum-feld";
 import { GruppenHinweis, RaeumeHinweis } from "./listen-hinweise";
 import type { Gruppe, Raum } from "@/lib/db/schema";
 
@@ -105,7 +106,7 @@ export function NeuePersonForm({
             <Input id="email" name="email" type="email" autoComplete="off" />
           </Field>
           <Field label="Befristet bis" htmlFor="befristetBis" errors={errors?.befristetBis}>
-            <Input id="befristetBis" name="befristetBis" type="date" />
+            <DatumFeld id="befristetBis" name="befristetBis" />
           </Field>
           <Field label="Eingetragen von" htmlFor="eingetragenVon" errors={errors?.eingetragenVon}>
             <Input
@@ -117,14 +118,14 @@ export function NeuePersonForm({
             />
           </Field>
           <Field label="Transponder Ausgabe am" htmlFor="transponderAusgabeAm" errors={errors?.transponderAusgabeAm}>
-            <Input id="transponderAusgabeAm" name="transponderAusgabeAm" type="date" />
+            <DatumFeld id="transponderAusgabeAm" name="transponderAusgabeAm" />
           </Field>
           <Field
             label="Transponder Rückgabe am"
             htmlFor="transponderRueckgabeAm"
             errors={errors?.transponderRueckgabeAm}
           >
-            <Input id="transponderRueckgabeAm" name="transponderRueckgabeAm" type="date" />
+            <DatumFeld id="transponderRueckgabeAm" name="transponderRueckgabeAm" />
           </Field>
           <Field label="Zugang zu" className="sm:col-span-2" hint={<RaeumeHinweis />}>
             <RaumAuswahl raeume={raeume} idPrefix="neu" />

@@ -9,6 +9,7 @@ import { Field } from "@/components/ui/field";
 import { Input, Select, Textarea } from "@/components/ui/input";
 import { SubmitButton, FormMessage } from "@/components/ui/form";
 import { RaumAuswahl } from "./raum-auswahl";
+import { DatumFeld } from "./datum-feld";
 import { GruppenHinweis, RaeumeHinweis } from "./listen-hinweise";
 import { useErfordertName } from "@/lib/use-mein-name";
 import { formatDate, formatDateTime, cn } from "@/lib/utils";
@@ -225,11 +226,10 @@ function EditRow({
           htmlFor={`abgleichKeyverwaltungAm-${person.id}`}
           errors={errors?.abgleichKeyverwaltungAm}
         >
-          <Input
+          <DatumFeld
             id={`abgleichKeyverwaltungAm-${person.id}`}
             name="abgleichKeyverwaltungAm"
-            type="date"
-            defaultValue={person.abgleichKeyverwaltungAm ?? ""}
+            defaultValue={person.abgleichKeyverwaltungAm}
           />
         </Field>
 
@@ -240,20 +240,14 @@ function EditRow({
           htmlFor={`transponderAusgabeAm-${person.id}`}
           errors={errors?.transponderAusgabeAm}
         >
-          <Input
+          <DatumFeld
             id={`transponderAusgabeAm-${person.id}`}
             name="transponderAusgabeAm"
-            type="date"
-            defaultValue={person.transponderAusgabeAm ?? ""}
+            defaultValue={person.transponderAusgabeAm}
           />
         </Field>
         <Field label="Befristet bis" htmlFor={`befristetBis-${person.id}`} errors={errors?.befristetBis}>
-          <Input
-            id={`befristetBis-${person.id}`}
-            name="befristetBis"
-            type="date"
-            defaultValue={person.befristetBis ?? ""}
-          />
+          <DatumFeld id={`befristetBis-${person.id}`} name="befristetBis" defaultValue={person.befristetBis} />
         </Field>
 
         <Field
@@ -261,11 +255,10 @@ function EditRow({
           htmlFor={`transponderRueckgabeAm-${person.id}`}
           errors={errors?.transponderRueckgabeAm}
         >
-          <Input
+          <DatumFeld
             id={`transponderRueckgabeAm-${person.id}`}
             name="transponderRueckgabeAm"
-            type="date"
-            defaultValue={person.transponderRueckgabeAm ?? ""}
+            defaultValue={person.transponderRueckgabeAm}
           />
         </Field>
         <Field label="Übergabebeleg">
