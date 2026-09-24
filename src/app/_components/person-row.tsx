@@ -61,6 +61,14 @@ function ViewRow({ person, onEdit }: { person: PersonMitGruppe; onEdit: () => vo
         >
           {person.vorname} {person.nachname}
         </button>
+        {person.istHauptkontakt ? (
+          <span
+            title="Hauptkontakt der Gruppe"
+            className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-800"
+          >
+            ★ Hauptkontakt
+          </span>
+        ) : null}
         {!person.aktiv ? (
           <span className="rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-medium text-red-700">
             Inaktiv
