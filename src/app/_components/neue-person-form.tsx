@@ -83,6 +83,18 @@ export function NeuePersonForm({
               ))}
             </Select>
           </Field>
+          <Field label={<>&nbsp;</>}>
+            <label htmlFor="istHauptkontakt" className="flex h-9 items-center gap-2 text-sm text-ink">
+              <input
+                id="istHauptkontakt"
+                type="checkbox"
+                name="istHauptkontakt"
+                value="true"
+                className="h-4 w-4 accent-brand"
+              />
+              Hauptkontakt der Gruppe
+            </label>
+          </Field>
           <Field label="Transponder-Nr." htmlFor="transponderNr" errors={errors?.transponderNr}>
             <Input id="transponderNr" name="transponderNr" autoComplete="off" />
           </Field>

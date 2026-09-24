@@ -22,6 +22,10 @@ export const personSchema = z.object({
   vorname: z.string().trim().min(1, "Pflichtfeld"),
   nachname: z.string().trim().min(1, "Pflichtfeld"),
   gruppeId: z.coerce.number().int().positive("Bitte eine Gruppe wählen"),
+  istHauptkontakt: z
+    .string()
+    .optional()
+    .transform((v) => v === "true"),
   transponderNr: optionalText,
   telefon: optionalText,
   email: optionalText.refine(
@@ -46,6 +50,7 @@ export async function listPersonenMitGruppe() {
       nachname: schema.personen.nachname,
       aktiv: schema.personen.aktiv,
       aktivGeaendertAm: schema.personen.aktivGeaendertAm,
+      istHauptkontakt: schema.personen.istHauptkontakt,
       transponderNr: schema.personen.transponderNr,
       telefon: schema.personen.telefon,
       email: schema.personen.email,

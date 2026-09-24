@@ -180,7 +180,6 @@ function EditRow({
           label="Gruppe"
           htmlFor={`gruppeId-${person.id}`}
           errors={errors?.gruppeId}
-          className="sm:col-span-2"
           hint={<GruppenHinweis />}
         >
           <Select id={`gruppeId-${person.id}`} name="gruppeId" defaultValue={person.gruppeId} required>
@@ -190,6 +189,22 @@ function EditRow({
               </option>
             ))}
           </Select>
+        </Field>
+        <Field label={<>&nbsp;</>}>
+          <label
+            htmlFor={`istHauptkontakt-${person.id}`}
+            className="flex h-9 items-center gap-2 text-sm text-ink"
+          >
+            <input
+              id={`istHauptkontakt-${person.id}`}
+              type="checkbox"
+              name="istHauptkontakt"
+              value="true"
+              defaultChecked={person.istHauptkontakt}
+              className="h-4 w-4 accent-brand"
+            />
+            Hauptkontakt der Gruppe
+          </label>
         </Field>
 
         <Trenner />

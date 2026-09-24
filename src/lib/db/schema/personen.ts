@@ -17,6 +17,7 @@ export const personen = pgTable("personen", {
   gruppeId: integer("gruppe_id")
     .notNull()
     .references(() => gruppen.id, { onDelete: "restrict" }),
+  istHauptkontakt: boolean("ist_hauptkontakt").notNull().default(false),
   aktiv: boolean("aktiv").notNull().default(true),
   aktivGeaendertAm: timestamp("aktiv_geaendert_am", { withTimezone: true }),
   transponderNr: text("transponder_nr"),
