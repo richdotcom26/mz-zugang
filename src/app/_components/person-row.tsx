@@ -9,6 +9,7 @@ import { Field } from "@/components/ui/field";
 import { Input, Select, Textarea } from "@/components/ui/input";
 import { SubmitButton, FormMessage } from "@/components/ui/form";
 import { RaumAuswahl } from "./raum-auswahl";
+import { GruppenHinweis, RaeumeHinweis } from "./listen-hinweise";
 import { useErfordertName } from "@/lib/use-mein-name";
 import { formatDate, formatDateTime, cn } from "@/lib/utils";
 import type { Gruppe, Raum } from "@/lib/db/schema";
@@ -69,34 +70,6 @@ function ViewRow({ person, onEdit }: { person: PersonMitGruppe; onEdit: () => vo
           <span className="text-xs text-muted">Transponder {person.transponderNr}</span>
         ) : null}
       </div>
-    </div>
-  );
-}
-
-function Zusammenfassung({ person }: { person: PersonMitGruppe }) {
-  const zeilen = [
-    person.transponderNr ? `Transponder ${person.transponderNr}` : null,
-    [person.telefon, person.email].filter(Boolean).join(" · ") || null,
-    person.befristetBis ? `Befristet bis ${formatDate(person.befristetBis)}` : null,
-    person.transponderAusgabeAm || person.transponderRueckgabeAm
-      ? [
-          person.transponderAusgabeAm ? `Transponder ausgegeben ${formatDate(person.transponderAusgabeAm)}` : null,
-          person.transponderRueckgabeAm ? `zurückgegeben ${formatDate(person.transponderRueckgabeAm)}` : null,
-        ]
-          .filter(Boolean)
-          .join(" · ")
-      : null,
-    person.raeume.length > 0 ? `Zugang zu ${person.raeume.map((r) => r.name).join(", ")}` : null,
-    person.bemerkung,
-  ].filter(Boolean);
-
-  if (zeilen.length === 0) return null;
-
-  return (
-    <div className="mb-3 flex flex-col gap-0.5 text-xs text-muted">
-      {zeilen.map((zeile, i) => (
-        <p key={i}>{zeile}</p>
-      ))}
     </div>
   );
 }
@@ -184,8 +157,6 @@ function EditRow({
         </div>
       </div>
 
-      <Zusammenfassung person={person} />
-
       {aktivState?.ok === false ? <FormMessage state={aktivState} className="mb-2" /> : null}
       {deleteState?.ok === false ? <FormMessage state={deleteState} className="mb-2" /> : null}
 
@@ -205,7 +176,13 @@ function EditRow({
           <Input id={`email-${person.id}`} name="email" type="email" defaultValue={person.email ?? ""} />
         </Field>
 
-        <Field label="Gruppe" htmlFor={`gruppeId-${person.id}`} errors={errors?.gruppeId} className="sm:col-span-2">
+        <Field
+          label="Gruppe"
+          htmlFor={`gruppeId-${person.id}`}
+          errors={errors?.gruppeId}
+          className="sm:col-span-2"
+          hint={<GruppenHinweis />}
+        >
           <Select id={`gruppeId-${person.id}`} name="gruppeId" defaultValue={person.gruppeId} required>
             {gruppen.map((g) => (
               <option key={g.id} value={g.id}>
@@ -276,7 +253,7 @@ function EditRow({
 
         <Trenner />
 
-        <Field label="Zugang zu" className="sm:col-span-2">
+        <Field label="Zugang zu" className="sm:col-span-2" hint={<RaeumeHinweis />}>
           <RaumAuswahl raeume={raeume} ausgewaehlt={person.raeume.map((r) => r.id)} idPrefix={`edit-${person.id}`} />
         </Field>
         <Field

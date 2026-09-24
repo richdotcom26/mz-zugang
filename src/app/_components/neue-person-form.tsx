@@ -10,6 +10,7 @@ import { Input, Select, Textarea } from "@/components/ui/input";
 import { SubmitButton, FormMessage } from "@/components/ui/form";
 import { useMeinName, useErfordertName } from "@/lib/use-mein-name";
 import { RaumAuswahl } from "./raum-auswahl";
+import { GruppenHinweis, RaeumeHinweis } from "./listen-hinweise";
 import type { Gruppe, Raum } from "@/lib/db/schema";
 
 export function NeuePersonForm({ gruppen, raeume }: { gruppen: Gruppe[]; raeume: Raum[] }) {
@@ -49,7 +50,12 @@ export function NeuePersonForm({ gruppen, raeume }: { gruppen: Gruppe[]; raeume:
           <Field label="Nachname" htmlFor="nachname" errors={errors?.nachname}>
             <Input id="nachname" name="nachname" required autoComplete="off" />
           </Field>
-          <Field label="Gruppe" htmlFor="gruppeId" errors={errors?.gruppeId}>
+          <Field
+            label="Gruppe"
+            htmlFor="gruppeId"
+            errors={errors?.gruppeId}
+            hint={<GruppenHinweis />}
+          >
             <Select id="gruppeId" name="gruppeId" required defaultValue="">
               <option value="" disabled>
                 Bitte wählen …
@@ -92,7 +98,7 @@ export function NeuePersonForm({ gruppen, raeume }: { gruppen: Gruppe[]; raeume:
           >
             <Input id="transponderRueckgabeAm" name="transponderRueckgabeAm" type="date" />
           </Field>
-          <Field label="Zugang zu" className="sm:col-span-2">
+          <Field label="Zugang zu" className="sm:col-span-2" hint={<RaeumeHinweis />}>
             <RaumAuswahl raeume={raeume} idPrefix="neu" />
           </Field>
           <Field label="Bemerkung" htmlFor="bemerkung" className="sm:col-span-2" errors={errors?.bemerkung}>
