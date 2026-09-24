@@ -3,8 +3,7 @@ import { listRaeume } from "@/lib/domain/raeume";
 import { listAdmins } from "@/lib/domain/admins";
 import { listPersonenMitGruppe } from "@/lib/domain/personen";
 import { Header } from "./_components/header";
-import { NeuePersonForm } from "./_components/neue-person-form";
-import { PersonenListe } from "./_components/personen-liste";
+import { PersonenBereich } from "./_components/personen-bereich";
 
 export default async function PortalPage() {
   const [gruppen, raeume, admins, personen] = await Promise.all([
@@ -24,9 +23,7 @@ export default async function PortalPage() {
         {personen.length - abgeglichen} noch offen
       </p>
 
-      <NeuePersonForm gruppen={gruppen} raeume={raeume} />
-
-      <PersonenListe gruppen={gruppen} raeume={raeume} personen={personen} />
+      <PersonenBereich gruppen={gruppen} raeume={raeume} personen={personen} />
     </main>
   );
 }

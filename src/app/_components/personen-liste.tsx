@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input, Select } from "@/components/ui/input";
 import { PersonRow } from "./person-row";
+import { useErfordertName } from "@/lib/use-mein-name";
 import type { Gruppe, Raum } from "@/lib/db/schema";
 import type { PersonMitGruppe } from "@/lib/domain/personen";
 
@@ -11,11 +12,14 @@ export function PersonenListe({
   gruppen,
   raeume,
   personen,
+  onPersonHinzufuegen,
 }: {
   gruppen: Gruppe[];
   raeume: Raum[];
   personen: PersonMitGruppe[];
+  onPersonHinzufuegen: (gruppeId: number) => void;
 }) {
+  const { spread: sperre } = useErfordertName();
   const [suche, setSuche] = useState("");
   const [gruppeFilter, setGruppeFilter] = useState("");
   const [raumFilter, setRaumFilter] = useState("");
@@ -84,9 +88,19 @@ export function PersonenListe({
           <Card key={gruppe.id}>
             <CardHeader>
               <CardTitle>{gruppe.name}</CardTitle>
-              <span className="text-xs text-muted">
-                {mitglieder.length} {mitglieder.length === 1 ? "Person" : "Personen"} · {abgeglichen} abgeglichen
-              </span>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => onPersonHinzufuegen(gruppe.id)}
+                  className="text-xs font-medium text-brand underline-offset-2 hover:underline disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:no-underline"
+                  {...sperre}
+                >
+                  Person hinzufügen
+                </button>
+                <span className="text-xs text-muted">
+                  {mitglieder.length} {mitglieder.length === 1 ? "Person" : "Personen"} · {abgeglichen} abgeglichen
+                </span>
+              </div>
             </CardHeader>
             <CardContent className="p-0">
               {mitglieder.length === 0 ? (

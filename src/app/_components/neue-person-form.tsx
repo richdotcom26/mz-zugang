@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import { addPersonAction } from "@/app/actions";
 import { IDLE } from "@/lib/domain/action-state";
 import { Button } from "@/components/ui/button";
@@ -13,8 +13,19 @@ import { RaumAuswahl } from "./raum-auswahl";
 import { GruppenHinweis, RaeumeHinweis } from "./listen-hinweise";
 import type { Gruppe, Raum } from "@/lib/db/schema";
 
-export function NeuePersonForm({ gruppen, raeume }: { gruppen: Gruppe[]; raeume: Raum[] }) {
-  const [offen, setOffen] = useState(false);
+export function NeuePersonForm({
+  gruppen,
+  raeume,
+  offen,
+  onOffenChange,
+  vorausgewaehlteGruppeId,
+}: {
+  gruppen: Gruppe[];
+  raeume: Raum[];
+  offen: boolean;
+  onOffenChange: (offen: boolean) => void;
+  vorausgewaehlteGruppeId: number | null;
+}) {
   const [state, formAction] = useActionState(addPersonAction, IDLE);
   const [meinName] = useMeinName();
   const { spread: sperre } = useErfordertName();
@@ -28,7 +39,7 @@ export function NeuePersonForm({ gruppen, raeume }: { gruppen: Gruppe[]; raeume:
 
   if (!offen) {
     return (
-      <Button onClick={() => setOffen(true)} className="self-start" {...sperre}>
+      <Button onClick={() => onOffenChange(true)} className="self-start" {...sperre}>
         + Person hinzufügen
       </Button>
     );
@@ -38,12 +49,17 @@ export function NeuePersonForm({ gruppen, raeume }: { gruppen: Gruppe[]; raeume:
     <Card>
       <CardHeader>
         <CardTitle>Person hinzufügen</CardTitle>
-        <Button size="sm" variant="ghost" onClick={() => setOffen(false)}>
+        <Button size="sm" variant="ghost" onClick={() => onOffenChange(false)}>
           Abbrechen
         </Button>
       </CardHeader>
       <CardContent>
-        <form ref={formRef} action={formAction} className="grid gap-3 sm:grid-cols-2">
+        <form
+          key={vorausgewaehlteGruppeId ?? "none"}
+          ref={formRef}
+          action={formAction}
+          className="grid gap-3 sm:grid-cols-2"
+        >
           <Field label="Vorname" htmlFor="vorname" errors={errors?.vorname}>
             <Input id="vorname" name="vorname" required autoComplete="off" />
           </Field>
@@ -56,7 +72,7 @@ export function NeuePersonForm({ gruppen, raeume }: { gruppen: Gruppe[]; raeume:
             errors={errors?.gruppeId}
             hint={<GruppenHinweis />}
           >
-            <Select id="gruppeId" name="gruppeId" required defaultValue="">
+            <Select id="gruppeId" name="gruppeId" required defaultValue={vorausgewaehlteGruppeId ?? ""}>
               <option value="" disabled>
                 Bitte wählen …
               </option>
