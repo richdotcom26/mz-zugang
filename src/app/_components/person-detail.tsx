@@ -69,18 +69,6 @@ function Ansicht({ person, onBearbeiten }: { person: PersonMitGruppe; onBearbeit
 
   return (
     <>
-      {status === "offen" ? (
-        <form action={abgleichAction}>
-          <input type="hidden" name="id" value={person.id} />
-          <input type="hidden" name="abgeglichen" value="true" />
-          <SubmitButton className="w-full" pendingText="Speichere …" {...sperre}>
-            <IconCheck />
-            Heute abgleichen
-          </SubmitButton>
-        </form>
-      ) : null}
-      {abgleichState?.ok === false ? <FormMessage state={abgleichState} /> : null}
-
       <Abschnitt titel="Zugang">
         <Zeile label="Transponder" wert={person.transponderNr ?? "noch keiner"} mono={!!person.transponderNr} />
         <Zeile label="Räume" wert={person.raeume.map((r) => r.name).join(", ") || "–"} />
@@ -126,16 +114,28 @@ function Ansicht({ person, onBearbeiten }: { person: PersonMitGruppe; onBearbeit
       ) : null}
 
       <div className="grid grid-cols-2 gap-2">
-        <Button variant="outline" onClick={onBearbeiten} {...sperre}>
+        <Button onClick={onBearbeiten} {...sperre}>
           Bearbeiten
         </Button>
-        <Link href={`/beleg/${person.id}`} className={buttonClasses("outline", "md")}>
+        <Link href={`/beleg/${person.id}`} className={buttonClasses("default", "md")}>
           Übergabebeleg
         </Link>
       </div>
 
       <Verlauf person={person} />
       <Verwaltung person={person} />
+
+      {status === "offen" ? (
+        <form action={abgleichAction}>
+          <input type="hidden" name="id" value={person.id} />
+          <input type="hidden" name="abgeglichen" value="true" />
+          <SubmitButton variant="outline" className="w-full" pendingText="Speichere …" {...sperre}>
+            <IconCheck />
+            Heute abgleichen
+          </SubmitButton>
+        </form>
+      ) : null}
+      {abgleichState?.ok === false ? <FormMessage state={abgleichState} /> : null}
     </>
   );
 }
