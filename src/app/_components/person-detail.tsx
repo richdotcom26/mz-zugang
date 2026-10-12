@@ -71,7 +71,20 @@ function Ansicht({ person, onBearbeiten }: { person: PersonMitGruppe; onBearbeit
     <>
       <Abschnitt titel="Zugang">
         <Zeile label="Transponder" wert={person.transponderNr ?? "noch keiner"} mono={!!person.transponderNr} />
-        <Zeile label="Räume" wert={person.raeume.map((r) => r.name).join(", ") || "–"} />
+        <Zeile
+          label="Türen"
+          wert={
+            person.raeume.length ? (
+              <ul className="flex flex-col gap-0.5 text-xs leading-snug">
+                {person.raeume.map((r) => (
+                  <li key={r.id}>{r.name}</li>
+                ))}
+              </ul>
+            ) : (
+              "–"
+            )
+          }
+        />
         <Zeile label="Ausgegeben am" wert={formatDate(person.transponderAusgabeAm) || "–"} />
         {person.transponderRueckgabeAm ? (
           <Zeile label="Zurück am" wert={formatDate(person.transponderRueckgabeAm)} />
