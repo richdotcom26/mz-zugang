@@ -3,7 +3,7 @@
 import { IconChevronDown, IconPlus, IconStar } from "@/components/ui/icons";
 import { useErfordertName } from "@/lib/use-mein-name";
 import { cn } from "@/lib/utils";
-import { StatusPill, statusVon } from "./status";
+import { AbgleichBadge, BelegPill, statusVon } from "./status";
 import type { Gruppe } from "@/lib/db/schema";
 import type { PersonMitGruppe } from "@/lib/domain/personen";
 
@@ -110,9 +110,10 @@ export function PersonenListe({
                         {p.istHauptkontakt ? (
                           <IconStar className="h-3.5 w-3.5 shrink-0 text-amber-500" aria-label="Hauptkontakt" />
                         ) : null}
+                        {p.abgleichKeyverwaltungAm ? <AbgleichBadge className="shrink-0" /> : null}
                       </span>
                       <span className="hidden font-mono text-xs text-muted sm:block">{p.transponderNr ?? "–"}</span>
-                      <StatusPill status={statusVon(p)} className="justify-self-end" />
+                      <BelegPill person={p} className="justify-self-end" />
                     </button>
                   </li>
                 ))}

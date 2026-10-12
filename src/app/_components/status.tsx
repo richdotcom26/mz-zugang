@@ -25,6 +25,52 @@ export function belegStandVon(
   return p.uebergabeSignaturAm ? "mitBeleg" : "ohneBeleg";
 }
 
+const BELEG: Record<Exclude<BelegFilter, "alle">, { label: string; farbe: string }> = {
+  ohneBeleg: { label: "Ohne Beleg", farbe: "bg-amber-100 text-amber-800" },
+  mitBeleg: { label: "Mit Beleg", farbe: "bg-green-100 text-green-800" },
+  inaktiv: { label: "Inaktiv", farbe: "bg-red-100 text-red-700" },
+};
+
+/** Haupt-Etikett einer Person: Stand des Übergabebelegs (bzw. inaktiv). */
+export function BelegPill({
+  person,
+  className,
+}: {
+  person: Pick<PersonMitGruppe, "aktiv" | "uebergabeSignaturAm">;
+  className?: string;
+}) {
+  const b = BELEG[belegStandVon(person)];
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center justify-center whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-medium",
+        b.farbe,
+        className,
+      )}
+    >
+      {b.label}
+    </span>
+  );
+}
+
+/** Zusatz-Badge „Abgeglichen“ (mit Key-Verwaltung), nur wenn gesetzt. */
+export function AbgleichBadge({ className }: { className?: string }) {
+  return (
+    <span
+      title="Mit Key-Verwaltung abgeglichen"
+      className={cn(
+        "inline-flex items-center gap-0.5 whitespace-nowrap rounded-full border border-navy/20 bg-navy/5 px-1.5 py-px text-[10px] font-medium text-navy",
+        className,
+      )}
+    >
+      <svg viewBox="0 0 24 24" className="h-2.5 w-2.5" fill="none" stroke="currentColor" strokeWidth={3} aria-hidden="true">
+        <path d="m5 12 5 5L20 7" />
+      </svg>
+      Abgeglichen
+    </span>
+  );
+}
+
 export const STATUS_LABEL: Record<Status, string> = {
   offen: "Offen",
   abgeglichen: "Abgeglichen",

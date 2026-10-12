@@ -10,7 +10,7 @@ import { IconCheck, IconStar } from "@/components/ui/icons";
 import { useErfordertName } from "@/lib/use-mein-name";
 import { formatDate, formatDateTime } from "@/lib/utils";
 import { PersonFormular } from "./person-formular";
-import { StatusPill, statusVon } from "./status";
+import { AbgleichBadge, BelegPill, statusVon } from "./status";
 import type { Gruppe, Raum } from "@/lib/db/schema";
 import type { PersonMitGruppe } from "@/lib/domain/personen";
 
@@ -25,7 +25,6 @@ export function PersonDetail({
   raeume: Raum[];
 }) {
   const [bearbeiten, setBearbeiten] = useState(false);
-  const status = statusVon(person);
 
   return (
     <div className="flex flex-col gap-4">
@@ -34,7 +33,8 @@ export function PersonDetail({
           <h2 className="text-lg font-semibold text-navy">
             {person.vorname} {person.nachname}
           </h2>
-          <StatusPill status={status} />
+          <BelegPill person={person} />
+          {person.abgleichKeyverwaltungAm ? <AbgleichBadge /> : null}
         </div>
         <p className="flex items-center gap-1.5 text-sm text-muted">
           {person.gruppeName}
