@@ -111,8 +111,8 @@ export function Portal({
           />
         </div>
         <div className="flex gap-2">
-          <Select value={raumFilter} onChange={(e) => setRaumFilter(e.target.value)} className="sm:w-40" aria-label="Raum">
-            <option value="">Alle Räume</option>
+          <Select value={raumFilter} onChange={(e) => setRaumFilter(e.target.value)} className="sm:w-40" aria-label="Tür">
+            <option value="">Alle Türen</option>
             {raeume.map((r) => (
               <option key={r.id} value={r.id}>
                 {r.name}
