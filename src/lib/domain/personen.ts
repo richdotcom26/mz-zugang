@@ -135,6 +135,17 @@ export async function setAktiv(id: number, aktiv: boolean) {
   return person;
 }
 
+/** Abgleich mit der Key-Verwaltung setzen (Datum `YYYY-MM-DD`) oder zurücknehmen (`null`). */
+export async function setAbgleich(id: number, datum: string | null) {
+  const [person] = await db
+    .update(schema.personen)
+    .set({ abgleichKeyverwaltungAm: datum, updatedAt: new Date() })
+    .where(eq(schema.personen.id, id))
+    .returning();
+  if (!person) throw new DomainError("NOT_FOUND", "Person nicht gefunden.");
+  return person;
+}
+
 export async function setUebergabeSignatur(id: number, signaturDataUrl: string | null) {
   const [person] = await db
     .update(schema.personen)

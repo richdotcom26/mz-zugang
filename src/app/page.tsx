@@ -4,7 +4,7 @@ import { listRaeume } from "@/lib/domain/raeume";
 import { listAdmins } from "@/lib/domain/admins";
 import { listPersonenMitGruppe } from "@/lib/domain/personen";
 import { Header } from "./_components/header";
-import { PersonenBereich } from "./_components/personen-bereich";
+import { Portal } from "./_components/portal";
 
 export default async function PortalPage() {
   await connection(); // nicht beim Build vorrendern – DB ist nur zur Laufzeit erreichbar
@@ -14,18 +14,11 @@ export default async function PortalPage() {
     listAdmins(),
     listPersonenMitGruppe(),
   ]);
-  const abgeglichen = personen.filter((p) => p.abgleichKeyverwaltungAm).length;
 
   return (
-    <main className="mx-auto flex max-w-3xl flex-col gap-6 p-4 sm:p-6">
+    <main className="mx-auto flex max-w-6xl flex-col gap-4 p-4 sm:p-6">
       <Header admins={admins} />
-
-      <p className="text-sm text-muted">
-        {personen.length} Personen erfasst · {abgeglichen} mit Key-Verwaltung abgeglichen ·{" "}
-        {personen.length - abgeglichen} noch offen
-      </p>
-
-      <PersonenBereich gruppen={gruppen} raeume={raeume} personen={personen} />
+      <Portal gruppen={gruppen} raeume={raeume} personen={personen} />
     </main>
   );
 }

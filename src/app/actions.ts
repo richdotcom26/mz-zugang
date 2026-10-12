@@ -7,6 +7,7 @@ import {
   updatePerson,
   deletePerson,
   setAktiv,
+  setAbgleich,
   setUebergabeSignatur,
   personSchema,
 } from "@/lib/domain/personen";
@@ -62,6 +63,19 @@ export async function setAktivAction(_prev: ActionState, formData: FormData): Pr
     await setAktiv(id, aktiv);
     revalidatePath("/");
     return ok();
+  });
+}
+
+/** "Heute abgleichen" (abgeglichen=true, Datum = heute in Deutschland) bzw. Abgleich zurücknehmen. */
+export async function setAbgleichAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  return runAction(async () => {
+    const id = Number(formData.get("id"));
+    if (!id) throw new DomainError("VALIDATION", "Ungültige ID.");
+    const abgeglichen = formData.get("abgeglichen") === "true";
+    const heute = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Berlin" }).format(new Date());
+    await setAbgleich(id, abgeglichen ? heute : null);
+    revalidatePath("/");
+    return ok(abgeglichen ? "Als abgeglichen markiert." : "Abgleich zurückgenommen.");
   });
 }
 
