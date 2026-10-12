@@ -33,12 +33,16 @@ Eigenständiges Projekt, unabhängig von anderen Projekten in diesem Verzeichnis
 - `src/lib/domain/` — Datenzugriff (`import "server-only"`), wirft `DomainError`.
 - `src/app/actions.ts` — Server Actions (`"use server"`), dünn: `parseForm` + `runAction`
   → `ActionState` (siehe `src/lib/domain/action-state.ts`).
-- `src/app/page.tsx` — einzige Seite: Formular „Person hinzufügen", Gruppen-Liste mit
-  Personen, Marker-Checkbox „abgeglichen" pro Person.
+- `src/app/page.tsx` — Hauptseite: `Header` + `Portal` (`_components/portal.tsx`):
+  Statuskacheln (filtern), Suche/Raumfilter/„+ Person", `PersonenListe` (einklappbare,
+  hellpetrol hinterlegte Gruppenzeilen; ausgewählte Person in Navy), Detailbereich rechts
+  (`PersonDetail` mit „Heute abgleichen" → `setAbgleichAction`; auf dem Handy Vollbild).
+  `PersonFormular` dient für Neu und Bearbeiten. Status-Logik in `_components/status.tsx`.
+- `src/app/einstellungen/` — Reiter (`?tab=gruppen|raeume|verantwortliche|sicherung`).
 - `src/app/login/` — Passwort-Formular + Login/Logout-Actions.
 - `src/components/ui/` — handgerollt, Tailwind, kein Radix.
-- Inline-Edit-Zeilen (`person-row.tsx`) klappen nach Speichern automatisch zurück:
-  Zeilen-`key` = `personId-updatedAt` → Remount im Ansichtsmodus (kein `setState` im Effect).
+- Der Detailbereich klappt nach Speichern automatisch in die Ansicht zurück:
+  `key` = `personId-updatedAt` → Remount im Ansichtsmodus (kein `setState` im Effect).
 - "Ich bin"-Feld (`useMeinName`, `localStorage`) füllt „Eingetragen von" /
   „Abgeglichen von" vor, da alle Verantwortlichen dasselbe Passwort teilen.
 
