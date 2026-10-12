@@ -101,7 +101,7 @@ export function PersonFormular({
         <Field label="Transponder-Nr." htmlFor={`${id}-transponderNr`} errors={errors?.transponderNr}>
           <Input id={`${id}-transponderNr`} name="transponderNr" defaultValue={person?.transponderNr ?? ""} autoComplete="off" />
         </Field>
-        <Field label="Räume" hint={<RaeumeHinweis />}>
+        <Field label="Türen" hint={<RaeumeHinweis />}>
           <RaumAuswahl raeume={raeume} ausgewaehlt={person?.raeume.map((r) => r.id)} idPrefix={id} />
         </Field>
         <div className="grid gap-3 sm:grid-cols-2">
