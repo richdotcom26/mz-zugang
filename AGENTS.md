@@ -11,14 +11,19 @@ Eigenständiges Projekt, unabhängig von anderen Projekten in diesem Verzeichnis
 ## Stack
 
 - Next.js (App Router, `src/`), TypeScript, Tailwind v4
-- Postgres (Supabase, Frankfurt) über **Drizzle** (`src/lib/db`)
+- Postgres über **Drizzle** (`src/lib/db`). **Produktion:** gemeinsames Postgres 17 in
+  Coolify (Projekt „Infrastruktur", DB `mz_zugang`, nur intern erreichbar, tägliches Backup).
+  `.env.local` zeigt weiterhin auf das alte Supabase-Projekt (Entwicklung) — Schema-Änderungen
+  müssen zusätzlich auf dem Server-Postgres eingespielt werden.
 - Auth: **ein gemeinsames Portal-Passwort** (kein Nutzer-Login) — `src/proxy.ts` (Next 16:
   "Middleware" heißt jetzt "Proxy", läuft standardmäßig im Node.js-Runtime) prüft ein
   signiertes Session-Cookie (`src/lib/auth`), Passwort-Hash in `PORTAL_PASSWORD_HASH`.
-- Deploy: Vercel
+- Deploy: **Coolify** auf dem eigenen Server → https://mz.wuelbeck.de. Push auf `main`
+  (GitHub `richdotcom26/mz-zugang`) deployt automatisch per `Dockerfile` (standalone output).
+  Seiten mit DB-Zugriff rufen `connection()` auf, damit der Build keine DB braucht.
 - **Preview:** Dev-Server läuft über die Parent-`.claude/launch.json` als `mz-zugang-dev`
   auf **Port 3002** (`npm run dev --prefix … -- -p 3002`), damit 3000/3001 (Nachbarprojekte) frei bleiben.
-- **Vercel-Projekt:** `richdotcom/mz-zugang` → https://mz-zugang.vercel.app
+- **Vercel-Projekt (alt, wird abgeschaltet):** `richdotcom/mz-zugang` → https://mz-zugang.vercel.app
 
 ## Struktur
 
