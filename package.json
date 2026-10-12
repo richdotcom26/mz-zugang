@@ -7,6 +7,7 @@
   },
   "scripts": {
     "dev": "next dev",
+    "db:tunnel": "ssh -N -L 5433:127.0.0.1:15432 root@159.195.5.53",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",

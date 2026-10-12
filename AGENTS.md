@@ -13,8 +13,11 @@ Eigenständiges Projekt, unabhängig von anderen Projekten in diesem Verzeichnis
 - Next.js (App Router, `src/`), TypeScript, Tailwind v4
 - Postgres über **Drizzle** (`src/lib/db`). **Produktion:** gemeinsames Postgres 17 in
   Coolify (Projekt „Infrastruktur", DB `mz_zugang`, nur intern erreichbar, tägliches Backup).
-  `.env.local` zeigt weiterhin auf das alte Supabase-Projekt (Entwicklung) — Schema-Änderungen
-  müssen zusätzlich auf dem Server-Postgres eingespielt werden.
+  **Entwicklung:** eigene DB `mz_zugang_dev` (Kopie der Live-Daten) auf demselben Server,
+  erreichbar per SSH-Tunnel: `npm run db:tunnel` (läuft im Vordergrund, offen lassen) →
+  `localhost:5433`. Auf dem Server leitet der Container `db-tunnel` (`127.0.0.1:15432`) zum
+  Postgres weiter. Schema-Änderungen nach dem Test in `mz_zugang_dev` zusätzlich auf
+  `mz_zugang` (Live) einspielen.
 - Auth: **ein gemeinsames Portal-Passwort** (kein Nutzer-Login) — `src/proxy.ts` (Next 16:
   "Middleware" heißt jetzt "Proxy", läuft standardmäßig im Node.js-Runtime) prüft ein
   signiertes Session-Cookie (`src/lib/auth`), Passwort-Hash in `PORTAL_PASSWORD_HASH`.
@@ -23,7 +26,6 @@ Eigenständiges Projekt, unabhängig von anderen Projekten in diesem Verzeichnis
   Seiten mit DB-Zugriff rufen `connection()` auf, damit der Build keine DB braucht.
 - **Preview:** Dev-Server läuft über die Parent-`.claude/launch.json` als `mz-zugang-dev`
   auf **Port 3002** (`npm run dev --prefix … -- -p 3002`), damit 3000/3001 (Nachbarprojekte) frei bleiben.
-- **Vercel-Projekt (alt, wird abgeschaltet):** `richdotcom/mz-zugang` → https://mz-zugang.vercel.app
 
 ## Struktur
 
@@ -42,19 +44,22 @@ Eigenständiges Projekt, unabhängig von anderen Projekten in diesem Verzeichnis
 
 ## Setup
 
-1. Neues (kostenloses) Supabase-Projekt anlegen, Region Frankfurt.
-2. `cp .env.example .env.local`, `DATABASE_URL` + `DATABASE_URL_DIRECT` eintragen.
+1. Datenbank: Rolle + DB im gemeinsamen Postgres anlegen (wie `mz_zugang_dev`), Tunnel mit
+   `npm run db:tunnel` öffnen.
+2. `cp .env.example .env.local`, `DATABASE_URL` + `DATABASE_URL_DIRECT` eintragen
+   (beide `postgres://mz_zugang_dev:…@127.0.0.1:5433/mz_zugang_dev`).
 3. Portal-Passwort festlegen und hashen: `npm run hash-password -- "DasPasswort"`,
    Ergebnis in `PORTAL_PASSWORD_HASH` eintragen. `SESSION_SECRET` z.B. mit
    `openssl rand -hex 32` erzeugen.
 4. `npm install`
-5. `npm run db:push` — Schema nach Supabase.
+5. `npm run db:push` — Schema in die Datenbank.
 6. `npm run db:seed` — Start-Gruppen (Musiker, Jugend, Konfis, Senioren, Square-Dance) anlegen.
 7. `npm run dev`
 
 ## Befehle
 
 - `npm run dev` / `build` / `lint` / `typecheck`
+- `npm run db:tunnel` — SSH-Tunnel zur Entwicklungs-DB (Voraussetzung für `dev` und `db:*`)
 - `npm run db:generate` · `db:migrate` · `db:push` · `db:studio` · `db:seed`
 - `npm run hash-password -- "<passwort>"` — Hash für `PORTAL_PASSWORD_HASH` erzeugen
 
