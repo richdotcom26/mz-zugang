@@ -1,32 +1,39 @@
 @import "tailwindcss";
 
 /**
- * Farbwelt = frisches Navy + Petrol (angelehnt an ruv.de):
- *  Navy #001957 · Petrol/Akzent #109DA8 (Hover #138C99, hell #00DCDC)
- *  Seite #F5F7F8 · Karte #FFFFFF · Linien #DDE5E7
- *  Text dunkel #14213D · gedämpft #5B6B7A · Lasur (soft) #DAFCFC
+ * Farbwelt = Theme „Navy & Petrol“ aus nikhuber-guitars (gleiche Werte):
+ *  navy = Schrift dunkel · ink = Schrift mittel · muted = gedämpft
+ *  page/surface/line = Seite/Karte/Linien · card-head = Kopf der Karten
+ *  brand = Akzent (Links, Fokus) · brand-hover · brand-soft = Akzent hell · glow = Fokus-Schein
+ *  primary = Hauptschaltfläche (+ fg = Schrift) · field / field-border = Eingabefelder
  */
 @theme {
   --color-brand: #109da8;
-  --color-brand-hover: #138c99;
-  --color-brand-bright: #00dcdc;
-  --color-brand-soft: #dafcfc;
+  --color-brand-hover: #0f7c87;
+  --color-brand-bright: var(--color-brand);
+  --color-brand-soft: #e3f5f7;
+
+  --color-primary: #001957;
+  --color-primary-hover: #123a6e;
+  --color-primary-fg: #ffffff;
+
   --color-navy: #001957;
-  --color-navy-light: #123a7a;
-  --color-info: #3a6ea5;
+  --color-navy-light: #123a6e;
+  --color-info: #5c7999;
   --color-success: #3f7a46;
 
-  --color-page: #f5f7f8;
+  --color-page: #f2f4f8;
   --color-surface: #ffffff;
-  --color-line: #dde5e7;
-  --color-ink: #14213d;
-  --color-muted: #5b6b7a;
+  --color-card-head: var(--color-surface);
+  --color-line: #d8dee9;
+  --color-ink: #123a6e;
+  --color-muted: #6b7280;
 
   /* Eingabefelder */
-  --color-field: #eef3f4;
-  --color-field-border: #c3d3d6;
+  --color-field: #f7f9fc;
+  --color-field-border: #cbd3e1;
 
-  --color-glow: rgb(16 157 168 / 0.22);
+  --color-glow: rgba(16, 157, 168, 0.24);
 }
 
 :root {
