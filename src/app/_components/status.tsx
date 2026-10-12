@@ -15,6 +15,16 @@ export function statusVon(p: Pick<PersonMitGruppe, "aktiv" | "abgleichKeyverwalt
   return p.abgleichKeyverwaltungAm ? "abgeglichen" : "offen";
 }
 
+/** Filter der Kacheln oben: nach Übergabebeleg (unterschrieben ja/nein) bzw. inaktiv. */
+export type BelegFilter = "alle" | "ohneBeleg" | "mitBeleg" | "inaktiv";
+
+export function belegStandVon(
+  p: Pick<PersonMitGruppe, "aktiv" | "uebergabeSignaturAm">,
+): Exclude<BelegFilter, "alle"> {
+  if (!p.aktiv) return "inaktiv";
+  return p.uebergabeSignaturAm ? "mitBeleg" : "ohneBeleg";
+}
+
 export const STATUS_LABEL: Record<Status, string> = {
   offen: "Offen",
   abgeglichen: "Abgeglichen",

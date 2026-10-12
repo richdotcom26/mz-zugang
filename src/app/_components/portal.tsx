@@ -9,16 +9,16 @@ import { cn } from "@/lib/utils";
 import { PersonenListe } from "./personen-liste";
 import { PersonDetail } from "./person-detail";
 import { PersonFormular } from "./person-formular";
-import { statusVon, type StatusFilter } from "./status";
+import { belegStandVon, type BelegFilter } from "./status";
 import type { Gruppe, Raum } from "@/lib/db/schema";
 import type { PersonMitGruppe } from "@/lib/domain/personen";
 
 type Auswahl = { art: "person"; id: number } | { art: "neu"; gruppeId: number | null } | null;
 
-const KACHELN: { filter: StatusFilter; label: string; farbe: string }[] = [
+const KACHELN: { filter: BelegFilter; label: string; farbe: string }[] = [
   { filter: "alle", label: "Alle Personen", farbe: "text-navy" },
-  { filter: "offen", label: "Noch offen", farbe: "text-amber-700" },
-  { filter: "abgeglichen", label: "Abgeglichen", farbe: "text-green-700" },
+  { filter: "ohneBeleg", label: "Noch ohne Beleg", farbe: "text-amber-700" },
+  { filter: "mitBeleg", label: "Mit Beleg", farbe: "text-green-700" },
   { filter: "inaktiv", label: "Inaktiv", farbe: "text-red-700" },
 ];
 
@@ -36,15 +36,15 @@ export function Portal({
   personen: PersonMitGruppe[];
 }) {
   const { spread: sperre } = useErfordertName();
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("alle");
+  const [statusFilter, setStatusFilter] = useState<BelegFilter>("alle");
   const [suche, setSuche] = useState("");
   const [raumFilter, setRaumFilter] = useState("");
   const [zugeklappt, setZugeklappt] = useState<Set<number>>(() => new Set());
   const [auswahl, setAuswahl] = useState<Auswahl>(null);
 
   const anzahl = useMemo(() => {
-    const z: Record<StatusFilter, number> = { alle: personen.length, offen: 0, abgeglichen: 0, inaktiv: 0 };
-    for (const p of personen) z[statusVon(p)]++;
+    const z: Record<BelegFilter, number> = { alle: personen.length, ohneBeleg: 0, mitBeleg: 0, inaktiv: 0 };
+    for (const p of personen) z[belegStandVon(p)]++;
     return z;
   }, [personen]);
 
@@ -54,7 +54,7 @@ export function Portal({
     const q = suche.trim().toLowerCase();
     const raumId = raumFilter ? Number(raumFilter) : null;
     return personen.filter((p) => {
-      if (statusFilter !== "alle" && statusVon(p) !== statusFilter) return false;
+      if (statusFilter !== "alle" && belegStandVon(p) !== statusFilter) return false;
       if (raumId !== null && !p.raeume.some((r) => r.id === raumId)) return false;
       if (q) {
         const text = [p.vorname, p.nachname, p.transponderNr, p.telefon, p.email, p.bemerkung]
