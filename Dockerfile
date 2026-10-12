@@ -13,7 +13,8 @@ COPY . .
 # revalidatePath aktualisiert) -> DB-Zugang als Build-Variable aus Coolify.
 ARG DATABASE_URL
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN npm run build
+# public/ ist (noch) leer und daher nicht im Git-Repo
+RUN mkdir -p public && npm run build
 
 FROM node:22-alpine AS runner
 WORKDIR /app
