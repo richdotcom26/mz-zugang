@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { connection } from "next/server";
 import { listGruppen } from "@/lib/domain/gruppen";
 import { listRaeume } from "@/lib/domain/raeume";
 import { listAdmins } from "@/lib/domain/admins";
@@ -9,6 +10,7 @@ import { AdminVerwaltung } from "../_components/admin-verwaltung";
 import { Datensicherung } from "../_components/datensicherung";
 
 export default async function EinstellungenPage() {
+  await connection(); // nicht beim Build vorrendern – DB ist nur zur Laufzeit erreichbar
   const [gruppen, raeume, admins] = await Promise.all([listGruppen(), listRaeume(), listAdmins()]);
 
   return (
